@@ -564,7 +564,8 @@ PlayerSettings:
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 1
   webGLLinkerTarget: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: BUILD_TYPE_CONTROLLER_DEMO;BUILD_PLATFORM_PC;BUILD_ARCH_WINDOWSX64
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 0
