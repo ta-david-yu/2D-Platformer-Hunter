@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: CubeHunter
+  productName: 2D-Platformer-Hunter
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -565,7 +565,7 @@ PlayerSettings:
   webGLCompressionFormat: 1
   webGLLinkerTarget: 0
   scriptingDefineSymbols:
-    1: BUILD_TYPE_CONTROLLER_DEMO;BUILD_PLATFORM_PC;BUILD_ARCH_WINDOWSX64
+    1: 
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 0
