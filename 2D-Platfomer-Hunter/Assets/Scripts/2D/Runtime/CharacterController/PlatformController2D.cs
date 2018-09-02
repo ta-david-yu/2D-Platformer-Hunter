@@ -8,8 +8,8 @@ using UnityEngine;
  *  Handles Down to Top platform, Passenger moving
  */
 [RequireComponent(typeof(PlatformMotor2D))]
-public class PlatformController2D : MonoBehaviour {
-
+public class PlatformController2D : MonoBehaviour
+{
     [System.Serializable]
     class MovementSettings
     {
