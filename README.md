@@ -1,4 +1,7 @@
 # CubeHunter
 Cube Hunter - 2018
+A 2D Platformer Controller Practice in Unity.
 
-Change txt in README to commit LOL
+# Materials
+rvros - Animated Pixel Adventurer
+https://rvros.itch.io/animated-pixel-hero
