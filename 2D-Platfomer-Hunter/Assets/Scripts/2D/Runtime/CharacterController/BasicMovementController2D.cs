@@ -244,8 +244,7 @@ public class BasicMovementController2D : MonoBehaviour
     public Action OnActionEnd = delegate { };
 
     // Condition
-    public delegate bool EvaluateFunc();
-    public EvaluateFunc CanAirJumpFunc = null;
+    public Func<bool> CanAirJumpFunc = null;
 
     #region Monobehaviour
 
