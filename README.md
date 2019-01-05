@@ -1,6 +1,7 @@
 # 2D Platformer Hunter 
 ![image](https://github.com/ta-david-yu/2D-Platformer-Hunter/blob/master/Demo.gif)
-2018 - A 2D Platformer Controller Practice in Unity.
+Implementation of a 2D platformer Controller in Unity.
+Based on https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.
 
 # Materials
 rvros - Animated Pixel Adventurer
