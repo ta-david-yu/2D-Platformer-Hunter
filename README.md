@@ -1,7 +1,7 @@
 # 2D Platformer Controller 
-![image](https://github.com/ta-david-yu/2D-Platformer-Hunter/blob/master/platformer-preview.gif)
-Implementation of a raycast-based 2D platformer controller in Unity.
-Extended from https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.
+![image](https://github.com/ta-david-yu/2D-Platformer-Hunter/blob/master/platformer-preview.gif)  
+Implementation of a raycast-based 2D platformer controller in Unity.  
+Extended from [Sebastian Lague's Creating a 2D Platformer series](https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.) with more customizable options and better modularization.
 
 # Requirement
 Unity 2018.3.0f2 or above
