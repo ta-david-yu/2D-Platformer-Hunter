@@ -25,7 +25,7 @@ public class CharacterStatController : MonoBehaviour, IHasStat
     public CharacterStat MagicalDurability { get; protected set; } = new CharacterStat();
 
     public CharacterStat Stability { get; protected set; } = new CharacterStat();
-    public CharacterStat JumpCount { get; protected set; } = new CharacterStat(3);
+    public CharacterStat JumpCount { get; protected set; } = new CharacterStat(1);
     public int JumpCounter { get; set; } = new int(); 
     public CharacterStat CanWallJump { get; protected set; } = new CharacterStat();
 

@@ -21,6 +21,8 @@ public class PlatformController2D : MonoBehaviour
     private BaseInputDriver m_InputDriver;
 
     [Header("Settings")]
+
+    [SerializeField]
     private MovementSettings m_Movement = new MovementSettings();
 
     #region Monobehaviour
