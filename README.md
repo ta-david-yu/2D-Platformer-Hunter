@@ -1,5 +1,5 @@
 # 2D Platformer Controller 
-![image](https://github.com/ta-david-yu/2D-Platformer-Hunter/blob/master/Demo.gif)
+![image](https://github.com/ta-david-yu/2D-Platformer-Hunter/blob/master/platformer-preview.gif)
 Implementation of a raycast-based 2D platformer controller in Unity.
 Extended from https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.
 
