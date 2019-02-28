@@ -10,7 +10,7 @@ Unity 2018.3.0f2 or above
 
 | Feature   | Description |
 | --------- | ------- |
-| Controllable Jump Height | Player can control the jump height of the controller by releasing the jump input in the middle of jump. |
+| Variable Jump Height | Player can control the jump height of the controller by releasing the jump input in the middle of jump. |
 | On-Slope Movement | Character controller can move on slope stably. User can also setup the max slope angle for each character controller. |
 | Air Jump | User can configure how many times a character controller can jump in mid air, or assign a function delegate to determine whether the character can do air jump or not. |
 | Wall Jump | Controller is able to perform wall jump and the wall jump force is adjustable. |
