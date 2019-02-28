@@ -23,6 +23,15 @@ Unity 2018.3.0f2 or above
 # Architecture
 To be updated.
 
+# Maybe, probably, will be, future to-do list:
+
+Most of these features are not necessary for a 2D platformer in my opinion.
+
+| Feature   | Description |
+| --------- | ------- |
+| Custom Action Module (WIP) | A new "Action" state in character controller. It will be more flexible than Dash Module. Probably with an action editor that can edit frame events / curve, and maybe a hitbox editor. |
+| Ability System (WIP)  | A RPG ability system. |
+
 # Materials
 rvros - Animated Pixel Adventurer
 https://rvros.itch.io/animated-pixel-hero
