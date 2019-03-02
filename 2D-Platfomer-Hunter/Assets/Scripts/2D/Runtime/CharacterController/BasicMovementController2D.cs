@@ -58,11 +58,11 @@ public class BasicMovementController2D : MonoBehaviour
         private float m_DashTimer;
         private float m_PrevDashTimer;
 
-        public void Start(int dashDir)
+        public void Start(int dashDir, float timeStep)
         {
             m_DashDir = dashDir;
             m_PrevDashTimer = 0.0f;
-            m_DashTimer = 0.0f;
+            m_DashTimer = timeStep;
         }
 
         public void _Update(float timeStep)
@@ -221,12 +221,14 @@ public class BasicMovementController2D : MonoBehaviour
     private float m_VelocityXSmoothing;
 
     // Action
-    public Action OnJump = delegate { };                // on all jump!
+    public Action OnJump = delegate { };                // on all jump! // OnEnterStateJump
+    public Action OnJumpEnd = delegate { };             // on jump -> falling  // OnLeaveStateJump
+
     public Action OnNormalJump = delegate { };          // on ground jump
+    public Action OnLadderJump = delegate { };          // on ladder jump
     public Action OnAirJump = delegate { };             // on air jump
     public Action<Vector2> OnWallJump = delegate { };   // on wall jump
-    public Action OnJumpEnd = delegate { };             // on jump -> falling
-    
+
     public Action<int> OnDash = delegate { };           // int represent dash direction
     public Action<float> OnDashStay = delegate { };     // float represent action progress
     public Action OnDashEnd = delegate { };
@@ -472,7 +474,7 @@ public class BasicMovementController2D : MonoBehaviour
         // check if want dashing
         if (m_InputDriver.Dash)
         {
-            startDash(rawInputX);
+            startDash(rawInputX, timeStep);
         }
 
         // check if want climbing ladder
@@ -504,7 +506,7 @@ public class BasicMovementController2D : MonoBehaviour
 
             if (DashModule.ChangeFacing)
             {
-                FacingDirection = (int) Mathf.Sign(m_Velocity.x);
+                FacingDirection = (int)Mathf.Sign(m_Velocity.x);
             }
 
             if (DashModule.UseCollision)
@@ -810,6 +812,13 @@ public class BasicMovementController2D : MonoBehaviour
                 changeState(MotorState.OnGround);
             }
         }
+        else
+        {
+            if (IsState(MotorState.OnGround))
+            {
+                changeState(MotorState.Falling);
+            }
+        }
 
         if (IsState(MotorState.WallSliding))
         {
@@ -860,7 +869,7 @@ public class BasicMovementController2D : MonoBehaviour
         {
             m_Velocity.y = m_JumpSettings.OnLadderJumpForce;
 
-            OnNormalJump.Invoke();
+            OnLadderJump.Invoke();
 
             return true;
         }
@@ -914,7 +923,7 @@ public class BasicMovementController2D : MonoBehaviour
         }
     }
 
-    private void startDash(int rawInputX)
+    private void startDash(int rawInputX, float timeStep)
     {
         if (DashModule == null)
         {
@@ -956,7 +965,7 @@ public class BasicMovementController2D : MonoBehaviour
         if (!IsGrounded() && DashModule.UseGravity)
             m_Velocity.y = 0;
 
-        m_DashState.Start(dashDir);
+        m_DashState.Start(dashDir, timeStep);
 
         changeState(MotorState.Dashing);
     }

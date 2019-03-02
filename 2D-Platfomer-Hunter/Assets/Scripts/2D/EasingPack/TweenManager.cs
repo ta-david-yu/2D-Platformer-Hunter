@@ -55,9 +55,9 @@ public class Tweener
         return this;
     }
 
-    public Tweener SetSpeed(float speed)
+    public Tweener SetTime(float time)
     {
-        m_Speed = speed;
+        m_Speed = 1 / time;
         return this;
     }
 
@@ -65,6 +65,11 @@ public class Tweener
     {
         m_EndCallback = callback;
         return this;
+    }
+
+    public void Abort()
+    {
+        IsActive = false;
     }
 
     // return false if finished (inactive)

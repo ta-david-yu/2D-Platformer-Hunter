@@ -96,6 +96,9 @@ public class Waypoints2DEditor : Editor
 
     private void handleSceneInput(Event evt)
     {
+        if (!m_IsInEditMode)
+            return;
+
         Vector3 mousePosition = HandleUtility.GUIPointToWorldRay(evt.mousePosition).origin;
         mousePosition.z = m_Target.transform.position.z;
 
