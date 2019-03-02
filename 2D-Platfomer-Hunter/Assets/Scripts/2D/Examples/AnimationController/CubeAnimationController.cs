@@ -35,8 +35,13 @@ public class CubeAnimationController : MonoBehaviour
         m_Controller.OnAirJump += onJump;
         m_Controller.OnWallJump += (Vector2 dir) => onJump();
 
-        m_Controller.OnLanded += onLanded;
+        m_Controller.OnMotorStateChanged += (MotorState prev, MotorState curr) => 
+        {
+            if (prev != MotorState.Dashing && curr == MotorState.OnGround) onLanded();
+        };
         m_Controller.OnWallSliding += onWallSliding;
+
+        m_Controller.OnDash += onDash;
     }
 
     private void Update()
@@ -55,8 +60,6 @@ public class CubeAnimationController : MonoBehaviour
 
     private void onJump()
     {
-        Debug.Log("onJump");
-        
         m_AnimState = AnimState.IsStretching;
 
         if (m_AnimTweener != null)
@@ -79,8 +82,6 @@ public class CubeAnimationController : MonoBehaviour
 
     private void onLanded()
     {
-        Debug.Log("OnLanded");
-
         m_AnimState = AnimState.Normal;
 
         if (m_AnimTweener != null)
@@ -107,5 +108,25 @@ public class CubeAnimationController : MonoBehaviour
     private void onWallSliding(int dir)
     {
         m_AnimState = AnimState.Normal;
+    }
+
+    private void onDash(int dir)
+    {
+        if (m_AnimTweener != null)
+        {
+            m_AnimTweener.Abort();
+            m_AnimTweener = null;
+        }
+
+        // map from startYScale to 1.0f
+        float startXScale = 2.0f;
+        float targetXScale = 1.0f;
+
+        m_AnimTweener = TweenManager.Instance.Tween((float progress) =>
+        {
+            float xScale = Mathf.LerpUnclamped(startXScale, targetXScale, progress);
+            float yScale = 1 / xScale;
+            Appearance.transform.localScale = new Vector3(m_Facing * xScale, yScale, 1.0f);
+        }).SetEase(EasingFunction.Ease.EaseOutCubic).SetTime(0.33f).SetEndCallback(() => m_AnimTweener = null);
     }
 }

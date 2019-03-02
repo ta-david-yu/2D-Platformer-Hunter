@@ -221,6 +221,8 @@ public class BasicMovementController2D : MonoBehaviour
     private float m_VelocityXSmoothing;
 
     // Action
+    public Action<MotorState, MotorState> OnMotorStateChanged = delegate { };
+
     public Action OnJump = delegate { };                // on all jump! // OnEnterStateJump
     public Action OnJumpEnd = delegate { };             // on jump -> falling  // OnLeaveStateJump
 
@@ -663,6 +665,14 @@ public class BasicMovementController2D : MonoBehaviour
                 if (IsAgainstWall())
                 {
                     changeState(MotorState.WallSliding);
+
+                    if (m_WallJumpSettings.CanWallJump)
+                    {
+                        m_AirJumpCounter = 0;
+                        OnResetJumpCounter.Invoke(MotorState.WallSliding);
+                        OnWallSliding.Invoke(m_Motor.Collisions.Left ? -1 : 1);
+                    }
+
                     wallSliding = true;
 
                     if (m_Velocity.y < -m_WallJumpSettings.WallSlidingSpeedMax)
@@ -852,6 +862,8 @@ public class BasicMovementController2D : MonoBehaviour
         if (success)
         {
             changeState(MotorState.Jumping);
+            
+            OnJump.Invoke();
         }
     }
 
@@ -967,6 +979,8 @@ public class BasicMovementController2D : MonoBehaviour
 
         m_DashState.Start(dashDir, timeStep);
 
+        OnDash.Invoke(dashDir);
+
         changeState(MotorState.Dashing);
     }
 
@@ -1039,6 +1053,10 @@ public class BasicMovementController2D : MonoBehaviour
         m_Velocity.y = 0;
 
         changeState(MotorState.OnLadder);
+
+        m_AirJumpCounter = 0;
+        OnResetJumpCounter.Invoke(MotorState.OnLadder);
+        m_ApplyGravity = false;
     }
 
     private void exitLadderState()
@@ -1077,25 +1095,8 @@ public class BasicMovementController2D : MonoBehaviour
         }
 
         // set new state
+        var prevState = m_MotorState;
         m_MotorState = state;
-
-        if (IsState(MotorState.OnLadder))
-        {
-            m_AirJumpCounter = 0;
-            OnResetJumpCounter.Invoke(MotorState.OnLadder);
-            m_ApplyGravity = false;
-        }
-
-        // enter new state action
-        if (IsState(MotorState.Jumping))
-        {
-            OnJump.Invoke();
-        }
-
-        if (IsState(MotorState.Dashing))
-        {
-            OnDash.Invoke(m_DashState.DashDir);
-        }
 
         if (IsState(MotorState.OnGround))
         {
@@ -1104,15 +1105,7 @@ public class BasicMovementController2D : MonoBehaviour
             OnLanded.Invoke();
         }
 
-        if (IsState(MotorState.WallSliding))
-        {
-            if (m_WallJumpSettings.CanWallJump)
-            {
-                m_AirJumpCounter = 0;
-                OnResetJumpCounter.Invoke(MotorState.WallSliding);
-                OnWallSliding.Invoke(m_Motor.Collisions.Left ? -1 : 1);
-            }
-        }
+        OnMotorStateChanged.Invoke(prevState, m_MotorState);
     }
 
     private void onMotorCollisionEnter2D(MotorCollision2D col)
