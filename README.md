@@ -6,6 +6,17 @@ Extended from [Sebastian Lague's Creating a 2D Platformer series](https://youtu.
 # Requirement
 Unity 2018.3.0f2 or above
 
+# Design
+
+The code structure is based on a model that I call Input-Controller-Motor model. Each controller consists of three modules: Input, Controller and Motor.
+Each module can be replaced with user-customized module to achieve various gameplay mechanics.
+* **Input** represents the brain of a controller. The brain can be player's input or an AI. Waypoint navigation for moving platform is also a type of Input module.
+* **Controller** represents the body of a controller. The body decides what a character can do, such as, double jumpping, dasing.
+* **Motor** represents the physics law of a controller. For example, a character motor collides with obstacles; a platform motor can carry other motors or transforms.
+
+Any other behaviours that do not belong to these three modules should instead be implemented in a different components and listen to events sent by three main modules.
+For instance, a sprite animation controller that changes sprite when a character jumps should subscribe to OnJump event of the CharacterController.
+
 # Features
 
 | Feature   | Description |
@@ -36,7 +47,7 @@ Features not related to platformer but important
 
 | Feature   | Description |
 | --------- | ------- |
-| Using UPM | Pack this project into Unity Package managed by new Unity Package Manager. |
+| Using UPM | Pack this project into Unity Package managed by new Unity Package Manager. [note](https://gist.github.com/LotteMakesStuff/6e02e0ea303030517a071a1c81eb016e) |
 
 *[UPM]: Unity Package Manager
 
