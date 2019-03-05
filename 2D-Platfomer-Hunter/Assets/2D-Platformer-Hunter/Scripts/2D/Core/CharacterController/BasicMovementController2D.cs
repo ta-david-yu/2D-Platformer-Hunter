@@ -21,7 +21,7 @@ public class BasicMovementController2D : MonoBehaviour
     }
 
     [System.Serializable]
-    class JumpSettings
+    class Jump
     {
         public bool HasVariableJumpHeight = true;
         public int AirJumpAllowed = 1;
@@ -29,10 +29,13 @@ public class BasicMovementController2D : MonoBehaviour
         public float MinHeight = 1.0f;
         public float TimeToApex = .4f;
         public float OnLadderJumpForce = 0.0f;
+
+        public float FallingJumpPaddingTime = 0.09f;
+        public float WillJumpPaddingTime = 0.15f;
     }
 
     [System.Serializable]
-    class WallJumpSettings
+    class WallJump
     {
         public bool CanWallJump = true;
 
@@ -48,7 +51,19 @@ public class BasicMovementController2D : MonoBehaviour
     }
 
     [System.Serializable]
-    class DashState
+    class InputBuffer
+    {
+        public Vector2 Input = Vector2.zero;
+
+        public bool IsJumpPressed = false;
+        public bool IsJumpHeld = false;
+        public bool IsJumpReleased = false;
+        public bool IsDashPressed = false;
+        public bool IsDashHeld = false;
+    }
+
+    [System.Serializable]
+    class Dash
     {
         public BaseDashModule Module;
 
@@ -95,7 +110,7 @@ public class BasicMovementController2D : MonoBehaviour
     }
 
     [System.Serializable]
-    class ActionState
+    class Action
     {
         public BaseActionModule Module;
 
@@ -134,7 +149,7 @@ public class BasicMovementController2D : MonoBehaviour
                 return Vector2.zero;
             }
         }
-        
+
         public float GetActionProgress()
         {
             return Module.GetActionProgress(m_ActionTimer);
@@ -167,17 +182,18 @@ public class BasicMovementController2D : MonoBehaviour
     }
 
     private BaseInputDriver m_InputDriver;
+    private InputBuffer m_InputBuffer = new InputBuffer();
 
     [Header("Settings")]
     [SerializeField]
     private MovementSettings m_MovementSettings;
 
     [SerializeField]
-    private JumpSettings m_JumpSettings;
+    private Jump m_Jump;
 
     [SerializeField]
-    private WallJumpSettings m_WallJumpSettings;
-    
+    private WallJump m_WallJump;
+
     private MotorState m_MotorState;
 
     private float m_Gravity;
@@ -187,6 +203,8 @@ public class BasicMovementController2D : MonoBehaviour
     private float m_MinJumpSpeed;
 
     private int m_AirJumpCounter = 0;
+    private int m_WillJumpPaddingFrame = -1;
+    private int m_FallingJumpPaddingFrame = -1;
 
     private int m_FacingDirection = 1;
     public int FacingDirection
@@ -203,16 +221,16 @@ public class BasicMovementController2D : MonoBehaviour
             }
         }
     }
-    
-    [SerializeField]
-    private DashState m_DashState = new DashState();
 
     [SerializeField]
-    private ActionState m_ActionState = new ActionState();
+    private Dash m_Dash = new Dash();
 
-    public BaseDashModule DashModule { get { return m_DashState.Module; } private set { m_DashState.Module = value; } }
+    [SerializeField]
+    private Action m_Action = new Action();
 
-    public BaseActionModule ActionModule { get { return m_ActionState.Module; } private set { m_ActionState.Module = value; } }
+    public BaseDashModule DashModule { get { return m_Dash.Module; } private set { m_Dash.Module = value; } }
+
+    public BaseActionModule ActionModule { get { return m_Action.Module; } private set { m_Action.Module = value; } }
 
     private OnLadderState m_OnLadderState = new OnLadderState();
 
@@ -225,29 +243,29 @@ public class BasicMovementController2D : MonoBehaviour
     // Action
     public Action<MotorState, MotorState> OnMotorStateChanged = delegate { };
 
-    public Action OnJump = delegate { };                // on all jump! // OnEnterStateJump
-    public Action OnJumpEnd = delegate { };             // on jump -> falling  // OnLeaveStateJump
+    public System.Action OnJump = delegate { };                // on all jump! // OnEnterStateJump
+    public System.Action OnJumpEnd = delegate { };             // on jump -> falling  // OnLeaveStateJump
 
-    public Action OnNormalJump = delegate { };          // on ground jump
-    public Action OnLadderJump = delegate { };          // on ladder jump
-    public Action OnAirJump = delegate { };             // on air jump
+    public System.Action OnNormalJump = delegate { };          // on ground jump
+    public System.Action OnLadderJump = delegate { };          // on ladder jump
+    public System.Action OnAirJump = delegate { };             // on air jump
     public Action<Vector2> OnWallJump = delegate { };   // on wall jump
 
     public Action<int> OnDash = delegate { };           // int represent dash direction
     public Action<float> OnDashStay = delegate { };     // float represent action progress
-    public Action OnDashEnd = delegate { };
+    public System.Action OnDashEnd = delegate { };
 
     public Action<int> OnWallSliding = delegate { };    // int represnet wall direction: 1 -> right, -1 -> left
-    public Action OnWallSlidingEnd = delegate { };
+    public System.Action OnWallSlidingEnd = delegate { };
 
-    public Action OnLanded = delegate { };              // on grounded
+    public System.Action OnLanded = delegate { };              // on grounded
 
     public Action<MotorState> OnResetJumpCounter = delegate { };
     public Action<int> OnFacingFlip = delegate { };
 
     public Action<int> OnAction = delegate { };
     public Action<float> OnActionStay = delegate { };
-    public Action OnActionEnd = delegate { };
+    public System.Action OnActionEnd = delegate { };
 
     // Condition
     public Func<bool> CanAirJumpFunc = null;
@@ -272,6 +290,13 @@ public class BasicMovementController2D : MonoBehaviour
     }
 
     // Temporary Update
+    private void Update()
+    {
+        readInput(Time.deltaTime);
+    }
+
+
+    // Temporary FixedUpdate
     private void FixedUpdate()
     {
         _Update(Time.fixedDeltaTime);
@@ -283,13 +308,13 @@ public class BasicMovementController2D : MonoBehaviour
         {
             Gizmos.color = new Color(1.0f, 0.5f, 0.5f, 0.5f);
             Gizmos.DrawCube(m_OnLadderState.Area.center, m_OnLadderState.Area.extents * 2);
-            
+
             Gizmos.color = (m_OnLadderState.AreaZone == LadderZone.Top) ? new Color(1.0f, 0.92f, 0.016f, 1.0f) : Color.white;
             Gizmos.DrawWireCube(m_OnLadderState.TopArea.center, m_OnLadderState.TopArea.extents * 2);
-            
+
             Gizmos.color = (m_OnLadderState.AreaZone == LadderZone.Bottom) ? new Color(1.0f, 0.92f, 0.016f, 1.0f) : Color.white;
             Gizmos.DrawWireCube(m_OnLadderState.BottomArea.center, m_OnLadderState.BottomArea.extents * 2);
-            
+
 
             if (IsRestrictedOnLadder())
             {
@@ -331,7 +356,7 @@ public class BasicMovementController2D : MonoBehaviour
 
     public bool IsAgainstWall()
     {
-        return m_WallJumpSettings.CanWallJump && (m_Motor.Collisions.Left || m_Motor.Collisions.Right);
+        return m_WallJump.CanWallJump && (m_Motor.Collisions.Left || m_Motor.Collisions.Right);
     }
 
     public bool CanAirJump()
@@ -342,7 +367,7 @@ public class BasicMovementController2D : MonoBehaviour
         }
         else
         {
-            return m_AirJumpCounter < m_JumpSettings.AirJumpAllowed;
+            return m_AirJumpCounter < m_Jump.AirJumpAllowed;
         }
     }
 
@@ -363,7 +388,7 @@ public class BasicMovementController2D : MonoBehaviour
             changeState(IsGrounded() ? MotorState.OnGround : MotorState.Falling);
         }
     }
-    
+
     public void ChangeActionModule(BaseActionModule module, bool disableActionState = false)
     {
         if (module != null)
@@ -448,13 +473,32 @@ public class BasicMovementController2D : MonoBehaviour
         // h = g * t^2 * 0.5
         // g = h / (t^2*0.5)
 
-        m_Gravity = -m_JumpSettings.MaxHeight    / (m_JumpSettings.TimeToApex * m_JumpSettings.TimeToApex * 0.5f);
-        m_MaxJumpSpeed = Mathf.Abs(m_Gravity) * m_JumpSettings.TimeToApex;
-        m_MinJumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(m_Gravity) * m_JumpSettings.MinHeight);
+        m_Gravity = -m_Jump.MaxHeight / (m_Jump.TimeToApex * m_Jump.TimeToApex * 0.5f);
+        m_MaxJumpSpeed = Mathf.Abs(m_Gravity) * m_Jump.TimeToApex;
+        m_MinJumpSpeed = Mathf.Sqrt(2 * Mathf.Abs(m_Gravity) * m_Jump.MinHeight);
         m_AirJumpCounter = 0;
 
         m_Motor.OnMotorCollisionEnter2D += onMotorCollisionEnter2D;
         m_Motor.OnMotorCollisionStay2D += onMotorCollisionStay2D;
+    }
+
+    private void readInput(float timeStep)
+    {
+        // Update input buffer
+        m_InputBuffer.Input = new Vector2(m_InputDriver.Horizontal, m_InputDriver.Vertical);
+
+        m_InputBuffer.IsJumpPressed = m_InputDriver.Jump;
+
+        if (m_InputBuffer.IsJumpPressed)
+        {
+            m_WillJumpPaddingFrame = calculateFramesFromTime(m_Jump.WillJumpPaddingTime, timeStep);
+        }
+
+        m_InputBuffer.IsJumpHeld = m_InputDriver.HoldingJump;
+        m_InputBuffer.IsJumpReleased = m_InputDriver.ReleaseJump;
+
+        m_InputBuffer.IsDashPressed = m_InputDriver.Dash;
+        m_InputBuffer.IsDashHeld = m_InputDriver.HoldingDash;
     }
 
     public void _Update(float timeStep)
@@ -463,11 +507,17 @@ public class BasicMovementController2D : MonoBehaviour
 
         updateState(timeStep);
 
+        // check padding frame
+        if (m_WillJumpPaddingFrame >= 0)
+        {
+            m_InputBuffer.IsJumpPressed = true;
+        }
+
         // read input from input driver
-        Vector2 input = new Vector2(m_InputDriver.Horizontal, m_InputDriver.Vertical);
+        Vector2 input = m_InputBuffer.Input;
 
         Vector2Int rawInput = Vector2Int.zero;
-        
+
         if (input.x > 0.0f)
             rawInput.x = 1;
         else if (input.x < 0.0f)
@@ -480,9 +530,9 @@ public class BasicMovementController2D : MonoBehaviour
 
         // check which side of character is collided
         int wallDirX = m_Motor.Collisions.Right ? 1 : -1;
-        
+
         // check if want dashing
-        if (m_InputDriver.Dash)
+        if (m_InputBuffer.IsDashPressed)
         {
             startDash(rawInput.x, timeStep);
         }
@@ -509,7 +559,7 @@ public class BasicMovementController2D : MonoBehaviour
         // dashing state
         if (IsState(MotorState.Dashing))
         {
-            m_Velocity.x = m_DashState.DashDir * m_DashState.GetDashSpeed(); //getDashSpeed();
+            m_Velocity.x = m_Dash.DashDir * m_Dash.GetDashSpeed(); //getDashSpeed();
 
             if (!IsGrounded() && DashModule.UseGravity)
                 m_Velocity.y = 0;
@@ -527,9 +577,9 @@ public class BasicMovementController2D : MonoBehaviour
             else
             {
                 bool cannotTeleportTo = Physics2D.OverlapBox(
-                    m_Motor.Collider2D.bounds.center + m_Velocity * timeStep, 
-                    m_Motor.Collider2D.bounds.size, 
-                    0.0f, 
+                    m_Motor.Collider2D.bounds.center + m_Velocity * timeStep,
+                    m_Motor.Collider2D.bounds.size,
+                    0.0f,
                     m_Motor.Raycaster.CollisionLayer);
 
                 if (!cannotTeleportTo)
@@ -558,7 +608,7 @@ public class BasicMovementController2D : MonoBehaviour
             m_Velocity = input * m_MovementSettings.OnLadderSpeed;
 
             // jump if jump input is true
-            if (m_InputDriver.Jump)
+            if (m_InputBuffer.IsJumpPressed)
             {
                 startJump(false, rawInput.x, wallDirX);
             }
@@ -638,11 +688,11 @@ public class BasicMovementController2D : MonoBehaviour
                 m_Motor.transform.position = pos;
             }
         }
-        
+
         else // other state
         {
             // fall through one way platform
-            if (m_InputDriver.HoldingJump && rawInput.y < 0)
+            if (m_InputBuffer.IsJumpHeld && rawInput.y < 0)
             {
                 m_Motor.FallThrough();
             }
@@ -674,7 +724,7 @@ public class BasicMovementController2D : MonoBehaviour
                 {
                     changeState(MotorState.WallSliding);
 
-                    if (m_WallJumpSettings.CanWallJump)
+                    if (m_WallJump.CanWallJump)
                     {
                         m_AirJumpCounter = 0;
                         OnResetJumpCounter.Invoke(MotorState.WallSliding);
@@ -683,29 +733,29 @@ public class BasicMovementController2D : MonoBehaviour
 
                     wallSliding = true;
 
-                    if (m_Velocity.y < -m_WallJumpSettings.WallSlidingSpeedMax)
+                    if (m_Velocity.y < -m_WallJump.WallSlidingSpeedMax)
                     {
-                        m_Velocity.y = -m_WallJumpSettings.WallSlidingSpeedMax;
+                        m_Velocity.y = -m_WallJump.WallSlidingSpeedMax;
                     }
 
                     // check if still sticking to wall
-                    if (m_WallJumpSettings.WallStickTimer > 0.0f)
+                    if (m_WallJump.WallStickTimer > 0.0f)
                     {
                         m_VelocityXSmoothing = 0;
                         m_Velocity.x = 0;
 
                         if (input.x != wallDirX && input.x != 0)
                         {
-                            m_WallJumpSettings.WallStickTimer -= timeStep;
+                            m_WallJump.WallStickTimer -= timeStep;
                         }
                         else
                         {
-                            m_WallJumpSettings.WallStickTimer = m_WallJumpSettings.WallStickTime;
+                            m_WallJump.WallStickTimer = m_WallJump.WallStickTime;
                         }
                     }
                     else
                     {
-                        m_WallJumpSettings.WallStickTimer = m_WallJumpSettings.WallStickTime;
+                        m_WallJump.WallStickTimer = m_WallJump.WallStickTime;
                     }
                 }
             }
@@ -726,15 +776,15 @@ public class BasicMovementController2D : MonoBehaviour
             }
 
             // jump if jump input is true
-            if (m_InputDriver.Jump && rawInput.y >= 0)
+            if (m_InputBuffer.IsJumpPressed && rawInput.y >= 0)
             {
                 startJump(wallSliding, rawInput.x, wallDirX);
             }
 
             // variable jump height based on user input
-            if (m_JumpSettings.HasVariableJumpHeight)
+            if (m_Jump.HasVariableJumpHeight)
             {
-                if (m_InputDriver.ReleaseJump && rawInput.y >= 0)
+                if (m_InputBuffer.IsJumpReleased && rawInput.y >= 0)
                 {
                     if (m_Velocity.y > m_MinJumpSpeed)
                         m_Velocity.y = m_MinJumpSpeed;
@@ -782,22 +832,26 @@ public class BasicMovementController2D : MonoBehaviour
     {
         if (IsState(MotorState.Dashing))
         {
-            m_DashState._Update(timeStep);
+            m_Dash._Update(timeStep);
         }
 
         if (IsState(MotorState.CustomAction))
         {
-            m_ActionState._Update(timeStep);
+            m_Action._Update(timeStep);
         }
+
+
+        if (m_FallingJumpPaddingFrame >= 0) m_FallingJumpPaddingFrame--;
+        if (m_WillJumpPaddingFrame >= 0) m_WillJumpPaddingFrame--;
     }
 
     private void updateState(float timeStep)
     {
         if (IsState(MotorState.Dashing))
         {
-            OnDashStay(m_DashState.GetDashProgress());
+            OnDashStay(m_Dash.GetDashProgress());
 
-            if (m_DashState.GetDashProgress() >= 1.0f)
+            if (m_Dash.GetDashProgress() >= 1.0f)
             {
                 endDash();
             }
@@ -810,9 +864,9 @@ public class BasicMovementController2D : MonoBehaviour
 
         if (IsState(MotorState.CustomAction))
         {
-            OnActionStay(m_ActionState.GetActionProgress());
+            OnActionStay(m_Action.GetActionProgress());
 
-            if (m_ActionState.GetActionProgress() >= 1.0f)
+            if (m_Action.GetActionProgress() >= 1.0f)
             {
                 endAction();
             }
@@ -830,7 +884,7 @@ public class BasicMovementController2D : MonoBehaviour
                 endJump();
             }
         }
-        
+
         if (IsGrounded())
         {
             if (!IsState(MotorState.OnLadder))
@@ -842,6 +896,8 @@ public class BasicMovementController2D : MonoBehaviour
         {
             if (IsState(MotorState.OnGround))
             {
+                m_FallingJumpPaddingFrame = calculateFramesFromTime(m_Jump.FallingJumpPaddingTime, timeStep);
+
                 changeState(MotorState.Falling);
             }
         }
@@ -865,6 +921,7 @@ public class BasicMovementController2D : MonoBehaviour
     private void startJump(bool isWallJump, int rawInputX, int wallDirX)
     {
         bool success = false;
+
         if (isWallJump)
         {
             wallJump(rawInputX, wallDirX);
@@ -877,8 +934,12 @@ public class BasicMovementController2D : MonoBehaviour
 
         if (success)
         {
+            m_InputBuffer.IsJumpPressed = false;
+            m_FallingJumpPaddingFrame = -1;
+            m_WillJumpPaddingFrame = -1;
+
             changeState(MotorState.Jumping);
-            
+
             OnJump.Invoke();
         }
     }
@@ -895,9 +956,17 @@ public class BasicMovementController2D : MonoBehaviour
         }
         else if (IsState(MotorState.OnLadder))
         {
-            m_Velocity.y = m_JumpSettings.OnLadderJumpForce;
+            m_Velocity.y = m_Jump.OnLadderJumpForce;
 
             OnLadderJump.Invoke();
+
+            return true;
+        }
+        else if (m_FallingJumpPaddingFrame >= 0)
+        {
+            m_Velocity.y = m_MaxJumpSpeed;
+
+            OnNormalJump.Invoke();
 
             return true;
         }
@@ -917,24 +986,24 @@ public class BasicMovementController2D : MonoBehaviour
     }
 
     private void wallJump(int rawInputX, int wallDirX)
-    {   
+    {
         bool climbing = wallDirX == rawInputX;
         Vector2 jumpVec;
 
-        
+
         // climbing
         if (climbing || rawInputX == 0)
         {
             //Debug.Log("Climb");
-            jumpVec.x = -wallDirX * m_WallJumpSettings.ClimbForce.x;
-            jumpVec.y = m_WallJumpSettings.ClimbForce.y;
+            jumpVec.x = -wallDirX * m_WallJump.ClimbForce.x;
+            jumpVec.y = m_WallJump.ClimbForce.y;
         }
         // jump leap
         else
         {
             //Debug.Log("Leap");
-            jumpVec.x = -wallDirX * m_WallJumpSettings.LeapForce.x;
-            jumpVec.y = m_WallJumpSettings.LeapForce.y;
+            jumpVec.x = -wallDirX * m_WallJump.LeapForce.x;
+            jumpVec.y = m_WallJump.LeapForce.y;
         }
 
         OnWallJump.Invoke(jumpVec);
@@ -993,7 +1062,7 @@ public class BasicMovementController2D : MonoBehaviour
         if (!IsGrounded() && DashModule.UseGravity)
             m_Velocity.y = 0;
 
-        m_DashState.Start(dashDir, timeStep);
+        m_Dash.Start(dashDir, timeStep);
 
         OnDash.Invoke(dashDir);
 
@@ -1005,7 +1074,7 @@ public class BasicMovementController2D : MonoBehaviour
         if (IsState(MotorState.Dashing))
         {
             // smooth out or sudden stop
-            float vecX = m_DashState.DashDir * m_DashState.GetDashSpeed();
+            float vecX = m_Dash.DashDir * m_Dash.GetDashSpeed();
             m_VelocityXSmoothing = vecX;
             m_Velocity.x = vecX;
             changeState(IsGrounded() ? MotorState.OnGround : MotorState.Falling);
@@ -1033,7 +1102,7 @@ public class BasicMovementController2D : MonoBehaviour
         }
 
         int actionDir = (rawInputX != 0) ? rawInputX : FacingDirection;
-        
+
         if (!ActionModule.CanUseToSlidingWall)
         {
             if (IsState(MotorState.WallSliding))
@@ -1046,7 +1115,7 @@ public class BasicMovementController2D : MonoBehaviour
             }
         }
 
-        m_ActionState.Start(actionDir);
+        m_Action.Start(actionDir);
 
         changeState(MotorState.CustomAction);
     }
@@ -1056,7 +1125,7 @@ public class BasicMovementController2D : MonoBehaviour
         if (IsState(MotorState.CustomAction))
         {
             // smooth out or sudden stop
-            Vector2 vec = new Vector2(m_ActionState.ActionDir, 1) * m_ActionState.GetActionVelocity();
+            Vector2 vec = new Vector2(m_Action.ActionDir, 1) * m_Action.GetActionVelocity();
             m_VelocityXSmoothing = vec.x;
             m_Velocity = vec;
             changeState(IsGrounded() ? MotorState.OnGround : MotorState.Falling);
@@ -1122,6 +1191,11 @@ public class BasicMovementController2D : MonoBehaviour
         }
 
         OnMotorStateChanged.Invoke(prevState, m_MotorState);
+    }
+
+    private int calculateFramesFromTime(float time, float timeStep)
+    {
+        return Mathf.RoundToInt(time / timeStep);
     }
 
     private void onMotorCollisionEnter2D(MotorCollision2D col)
