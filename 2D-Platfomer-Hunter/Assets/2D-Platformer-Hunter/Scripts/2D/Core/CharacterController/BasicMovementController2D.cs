@@ -466,11 +466,17 @@ public class BasicMovementController2D : MonoBehaviour
         // read input from input driver
         Vector2 input = new Vector2(m_InputDriver.Horizontal, m_InputDriver.Vertical);
 
-        int rawInputX = 0;
+        Vector2Int rawInput = Vector2Int.zero;
+        
         if (input.x > 0.0f)
-            rawInputX = 1;
+            rawInput.x = 1;
         else if (input.x < 0.0f)
-            rawInputX = -1;
+            rawInput.x = -1;
+
+        if (input.y > 0.0f)
+            rawInput.y = 1;
+        else if (input.y < 0.0f)
+            rawInput.y = -1;
 
         // check which side of character is collided
         int wallDirX = m_Motor.Collisions.Right ? 1 : -1;
@@ -478,7 +484,7 @@ public class BasicMovementController2D : MonoBehaviour
         // check if want dashing
         if (m_InputDriver.Dash)
         {
-            startDash(rawInputX, timeStep);
+            startDash(rawInput.x, timeStep);
         }
 
         // check if want climbing ladder
@@ -486,14 +492,14 @@ public class BasicMovementController2D : MonoBehaviour
         {
             if (IsInLadderTopArea())
             {
-                if (input.y < 0.0f)
+                if (rawInput.y < 0)
                 {
                     enterLadderState();
                 }
             }
             else
             {
-                if (input.y > 0.0f)
+                if (rawInput.y > 0)
                 {
                     enterLadderState();
                 }
@@ -554,7 +560,7 @@ public class BasicMovementController2D : MonoBehaviour
             // jump if jump input is true
             if (m_InputDriver.Jump)
             {
-                startJump(false, rawInputX, wallDirX);
+                startJump(false, rawInput.x, wallDirX);
             }
 
             if (m_Velocity.x != 0.0f)
@@ -636,7 +642,7 @@ public class BasicMovementController2D : MonoBehaviour
         else // other state
         {
             // fall through one way platform
-            if (m_InputDriver.HoldingJump && input.y < 0.0f)
+            if (m_InputDriver.HoldingJump && rawInput.y < 0)
             {
                 m_Motor.FallThrough();
             }
@@ -720,15 +726,15 @@ public class BasicMovementController2D : MonoBehaviour
             }
 
             // jump if jump input is true
-            if (m_InputDriver.Jump && input.y >= 0.0f)
+            if (m_InputDriver.Jump && rawInput.y >= 0)
             {
-                startJump(wallSliding, rawInputX, wallDirX);
+                startJump(wallSliding, rawInput.x, wallDirX);
             }
 
             // variable jump height based on user input
             if (m_JumpSettings.HasVariableJumpHeight)
             {
-                if (m_InputDriver.ReleaseJump && input.y >= 0.0f)
+                if (m_InputDriver.ReleaseJump && rawInput.y >= 0)
                 {
                     if (m_Velocity.y > m_MinJumpSpeed)
                         m_Velocity.y = m_MinJumpSpeed;
