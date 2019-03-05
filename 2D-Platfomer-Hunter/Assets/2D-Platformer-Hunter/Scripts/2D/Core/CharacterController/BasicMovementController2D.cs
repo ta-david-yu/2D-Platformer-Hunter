@@ -705,10 +705,18 @@ public class BasicMovementController2D : MonoBehaviour
             }
 
             // Reset gravity if collision happened in y axis
-            if (m_Motor.Collisions.Above || m_Motor.Collisions.Below)
+            if (m_Motor.Collisions.Above)
             {
                 //Debug.Log("Reset Vec Y");
                 m_Velocity.y = 0;
+            }
+            else if (m_Motor.Collisions.Below)
+            {
+                // falling downward
+                if (m_Velocity.y < 0.0f)
+                {
+                    m_Velocity.y = 0;
+                }
             }
 
             // jump if jump input is true
