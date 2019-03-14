@@ -31,6 +31,9 @@ For instance, a sprite animation controller that changes sprite when a character
 * Jump Input Buffering - The jump input will be buffered for a period of time when the character controller is still in the air. Once the controller hits the ground, the buffered jump will be executed.
 * Coyote Time - Also known as grace period jumping. It allows players to register jump input in a small period of time even after moving off ledges.
 
+# Documentation
+* To be added :D
+
 # Maybe, probably, will be, future to-do list:
 
 Most of these features are not necessary for a 2D platformer in my opinion.
