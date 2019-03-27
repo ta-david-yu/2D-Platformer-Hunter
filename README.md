@@ -35,20 +35,19 @@ For instance, a sprite animation controller that changes sprite when a character
 # Documentation
 * To be added :D
 
+# WIP Feature
+
+* Ledge Grabbing - You can grab ledges.
+* Wall Climbing - You can configure whether your controller slide on wall or climb walls.
+
 # Maybe, probably, will be, future to-do list:
 
-Most of these features are not necessary for a 2D platformer in my opinion.
-
-| Feature   | Description |
-| --------- | ------- |
-| Custom Action Module (WIP) | A new "Action" state in character controller. It will be more flexible than Dash Module. Probably with an action editor that can edit frame events / curve, and maybe a hitbox editor. |
-| Ability System (WIP)  | A RPG ability system. |
+* Custom Action Module - A new "Action" state in character controller. It will be more flexible than Dash Module. Probably with an action editor that can edit frame events / curve, and maybe a hitbox editor.
+* Ability System - A RPG ability system.
 
 Features not related to platformer but important
 
-| Feature   | Description |
-| --------- | ------- |
-| Using UPM | Pack this project into Unity Package managed by new Unity Package Manager. [note](https://gist.github.com/LotteMakesStuff/6e02e0ea303030517a071a1c81eb016e) |
+* Using UPM - Pack this project into Unity Package managed by new Unity Package Manager. [note](https://gist.github.com/LotteMakesStuff/6e02e0ea303030517a071a1c81eb016e)
 
 *[UPM]: Unity Package Manager
 
