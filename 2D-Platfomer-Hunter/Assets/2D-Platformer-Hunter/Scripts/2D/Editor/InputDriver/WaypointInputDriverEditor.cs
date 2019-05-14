@@ -3,27 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(WaypointInputDriver))]
-public class WaypointInputDriverEditor : Editor
+namespace DYP
 {
-    WaypointInputDriver m_Target;
-
-    private void OnEnable()
+    [CustomEditor(typeof(WaypointInputDriver))]
+    public class WaypointInputDriverEditor : Editor
     {
-        m_Target = target as WaypointInputDriver;
-    }
+        WaypointInputDriver m_Target;
 
-    private void OnSceneGUI()
-    {
-        var oriColor = Handles.color;
+        private void OnEnable()
+        {
+            m_Target = target as WaypointInputDriver;
+        }
 
-        Handles.color = Color.blue;
-        Handles.DrawWireCube(m_Target.transform.position, Vector3.one);
+        private void OnSceneGUI()
+        {
+            var oriColor = Handles.color;
 
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.white;
-        Handles.Label(m_Target.transform.position, (m_Target.IsCyclic) ? "cyclic" : "turning", style);
+            Handles.color = Color.blue;
+            Handles.DrawWireCube(m_Target.transform.position, Vector3.one);
 
-        Handles.color = oriColor;
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.white;
+            Handles.Label(m_Target.transform.position, (m_Target.IsCyclic) ? "cyclic" : "turning", style);
+
+            Handles.color = oriColor;
+        }
     }
 }

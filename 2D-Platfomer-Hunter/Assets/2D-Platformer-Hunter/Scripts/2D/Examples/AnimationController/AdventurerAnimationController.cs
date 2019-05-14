@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DYP;
 
 public class AdventurerAnimationController : MonoBehaviour
 {
@@ -43,7 +44,7 @@ public class AdventurerAnimationController : MonoBehaviour
 
         m_Animtor.SetFloat("SpeedY", m_Controller.InputVelocity.y);
 
-        m_Animtor.SetBool("IsGrounded", m_Controller.IsGrounded());
+        m_Animtor.SetBool("IsGrounded", m_Controller.IsOnGround());
 
         m_Animtor.SetBool("IsOnWall", m_Controller.IsState(MotorState.WallSliding));
     }
@@ -60,12 +61,12 @@ public class AdventurerAnimationController : MonoBehaviour
 
     private void onWallSliding(int wallDir)
     {
-        m_SpriteRenderer.flipX = true;
+        //m_SpriteRenderer.flipX = true;
     }
 
     private void onWallSlidingEnd()
     {
-        m_SpriteRenderer.flipX = false;
+        //m_SpriteRenderer.flipX = false;
     }
 
     private void onDash(int dashDir)

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DYP;
 
 public class PlayerCharacter : MonoBehaviour, IDamagable, IHasInventory, IHasEquipment
 {

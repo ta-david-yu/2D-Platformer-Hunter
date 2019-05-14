@@ -196,7 +196,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MaxClimbAngle: 80
   m_MaxDescendAngle: 80
-  MovingDirection: 1
 --- !u!114 &114486199799211510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,27 +210,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MovementSettings:
     Speed: 8
-    OnLadderSpeed: 5
     AccelerationTimeAirborne: 0.1
     AccelerationTimeGrounded: 0.1
-  m_JumpSettings:
+  m_OnLadderSettings:
+    SnapToRestrictedArea: 0
+    ExitLadderOnGround: 1
+    OnLadderSpeed: 4
+    LockFacingToRight: 1
+  m_Jump:
     HasVariableJumpHeight: 1
     AirJumpAllowed: 1
     MaxHeight: 3.5
     MinHeight: 1
     TimeToApex: 0.4
-    OnLadderJumpForce: 0
-  m_WallJumpSettings:
-    CanWallJump: 1
-    WallSlidingSpeedMax: 2
+    OnLadderJumpForce: 0.4
+    FallingJumpPaddingTime: 0.09
+    WillJumpPaddingTime: 0.15
+  m_WallInteraction:
+    CanWallSlide: 1
     WallStickTime: 0.15
     WallStickTimer: 0
+    WallSlideSpeedLoss: 0.05
+    WallSlidingSpeedMax: 2
+    CanWallClimb: 0
+    WallClimbSpeed: 2
+    CanWallJump: 1
     ClimbForce: {x: 12, y: 16}
     OffForce: {x: 8, y: 15}
     LeapForce: {x: 18, y: 17}
-  m_DashState:
+    CanGrabLedge: 0
+    LedgeDetectionOffset: 0.1
+    WallDirX: 0
+  m_Dash:
     Module: {fileID: 11400000, guid: 306b38766d9ec4c4f90f833d5be3dc83, type: 2}
-  m_ActionState:
+  m_CustomAction:
     Module: {fileID: 0}
 --- !u!114 &114368022569154642
 MonoBehaviour:
