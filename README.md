@@ -1,6 +1,7 @@
 # 2D Platformer Hunter 
 ![image](https://github.com/ta-david-yu/2D-Platformer-Hunter/blob/master/platformer-preview.gif)  
-[Video Links Here](https://youtu.be/wnalr3_RULU)  
+[Features video links here](https://youtu.be/wnalr3_RULU)  
+[I've also made a short level with it](https://youtu.be/Sj-WD9qeFmc)  
 Implementation of a raycast-based 2D platformer controller in Unity.  
 Extended from [Sebastian Lague's Creating a 2D Platformer series](https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.) with more customizable options and better modularization.
 
@@ -28,17 +29,14 @@ For instance, a sprite animation controller that changes sprite when a character
 * Restricted Climbing Area - Users can separate the actual movable area in climbing state with the trigger area. Controller will be smoothly interpolated from triggered position to restricted area when entering climbing state.
 * One-Way Platform
 * Moving Platform - Including a node editor for editing waypoints.
-* Dash - User is able to customize dash modules that can be applied to a controller. A dash module describes how a controller moves during a dash action. It can either be a dodging movement or a teleport action.
-* Jump Input Buffering - The jump input will be buffered for a period of time when the character controller is still in the air. Once the controller hits the ground, the buffered jump will be executed.
+* Dash - User is able to customize dash modules that can be applied to a controller.
+* Jump Input Buffering - The jump input will be buffered for a period of time when the character controller is still in the air.
 * Coyote Time - Also known as grace period jumping. It allows players to register jump input in a small period of time even after moving off ledges.
+* Ledge Grabbing
+* Wall Climbing - You can configure whether your controller slides on wall or climbs on walls (just like how [Knuckles](https://youtu.be/-qOVqxn-JVA) does)  
 
 # Documentation
 * To be added :D
-
-# WIP Feature
-
-* Ledge Grabbing - You can grab ledges.
-* Wall Climbing - You can configure whether your controller slide on wall or climb walls.
 
 # Maybe, probably, will be, future to-do list:
 
