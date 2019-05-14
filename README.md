@@ -6,7 +6,7 @@ Implementation of a raycast-based 2D platformer controller in Unity.
 Extended from [Sebastian Lague's Creating a 2D Platformer series](https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.) with more customizable options and better modularization.
 
 # Requirement
-Unity 2018.3.7f1 or later
+Unity 2018.3.8f1 or later
 
 # Design
 
