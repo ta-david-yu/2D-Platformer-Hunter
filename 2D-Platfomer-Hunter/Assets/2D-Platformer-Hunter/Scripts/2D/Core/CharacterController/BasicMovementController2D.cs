@@ -721,6 +721,7 @@ namespace DYP
                         enterLadderState();
                     }
                 }
+
             }
 
             // dashing state
@@ -836,9 +837,13 @@ namespace DYP
 
                 Vector2 currPos = m_Motor.transform.position;
 
+                // call Motor.Move to update collision info
                 m_Motor.Move(targetPos - currPos);
-                //m_Motor.transform.position += m_Velocity * timeStep;
 
+                // actual updated position
+                m_Motor.transform.position = targetPos;
+
+                // Second pass check
                 if (m_OnLadderState.HasRestrictedArea)
                 {
                     targetPos.x = Mathf.Clamp(targetPos.x, m_OnLadderState.RestrictedAreaBottomLeft.x, m_OnLadderState.RestrictedAreaTopRight.x);
@@ -1206,13 +1211,22 @@ namespace DYP
 
             if (IsOnGround())
             {
-                bool dontChangeToOnGround =
-                    (IsState(MotorState.OnLadder) && !m_OnLadderSettings.ExitLadderOnGround) ||
-                    IsState(MotorState.Frozen);
-
-                if (!dontChangeToOnGround)
+                if (IsState(MotorState.OnLadder))
                 {
-                    changeState(MotorState.OnGround);
+                    if (m_OnLadderSettings.ExitLadderOnGround)
+                    {
+                        if (!IsInLadderTopArea())
+                        {
+                            changeState(MotorState.OnGround);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!IsState(MotorState.Frozen))
+                    {
+                        changeState(MotorState.OnGround);
+                    }
                 }
             }
             else
