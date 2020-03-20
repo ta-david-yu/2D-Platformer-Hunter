@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 2000041246621388756}
   - component: {fileID: 524540820}
   m_Layer: 8
-  m_Name: BoxCharacter
+  m_Name: OrangeCharacter
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 524540819}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.1, y: 1.657, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -116,7 +116,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MaxClimbAngle: 80
   m_MaxDescendAngle: 80
-  MovingDirection: 1
 --- !u!114 &7637016947468089689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,27 +130,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MovementSettings:
     Speed: 8
-    OnLadderSpeed: 5
     AccelerationTimeAirborne: 0.1
     AccelerationTimeGrounded: 0.1
-  m_JumpSettings:
+  m_OnLadderSettings:
+    SnapToRestrictedArea: 0
+    ExitLadderOnGround: 1
+    OnLadderSpeed: 4
+    LockFacingToRight: 1
+  m_Jump:
     HasVariableJumpHeight: 1
     AirJumpAllowed: 1
     MaxHeight: 3.5
     MinHeight: 1
     TimeToApex: 0.4
-    OnLadderJumpForce: 0
-  m_WallJumpSettings:
-    CanWallJump: 1
-    WallSlidingSpeedMax: 2
+    OnLadderJumpForce: 0.4
+    FallingJumpPaddingTime: 0.09
+    WillJumpPaddingTime: 0.15
+  m_WallInteraction:
+    CanWallSlide: 1
     WallStickTime: 0.15
     WallStickTimer: 0
+    WallSlideSpeedLoss: 0.05
+    WallSlidingSpeedMax: 2
+    CanWallClimb: 0
+    WallClimbSpeed: 2
+    CanWallJump: 1
     ClimbForce: {x: 12, y: 16}
     OffForce: {x: 8, y: 15}
     LeapForce: {x: 18, y: 17}
-  m_DashState:
+    CanGrabLedge: 1
+    LedgeDetectionOffset: 0.1
+    WallDirX: 0
+  m_Dash:
     Module: {fileID: 11400000, guid: 18d6a6d6e86582242b2080c03da225fe, type: 2}
-  m_ActionState:
+  m_CustomAction:
     Module: {fileID: 0}
 --- !u!114 &2000041246621388756
 MonoBehaviour:
