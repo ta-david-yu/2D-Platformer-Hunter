@@ -36,7 +36,8 @@ For instance, a sprite animation controller that changes sprite when a character
 * Wall Climbing - You can configure whether your controller slides on wall or climbs on walls (just like how [Knuckles](https://youtu.be/-qOVqxn-JVA) does)  
 
 # Documentation
-* To be added :D
+* Remember to add a tag named "OneWayPlatform"
+* More to be added :D
 
 # Maybe, probably, will be, future to-do list:
 
