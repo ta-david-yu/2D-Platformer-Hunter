@@ -6,9 +6,13 @@ using UnityEngine;
 namespace DYP
 {
     [RequireComponent(typeof(Waypoints2D))]
-    public class WaypointInputDriver : BaseInputDriver
+    public class WaypointInputDriver : MonoBehaviour
     {
+        [SerializeField]
         private Waypoints2D m_Waypoints2D;
+
+        [SerializeField]
+        private PlatformController2D m_Controller;
 
         [SerializeField]
         private bool m_IsCyclic = true;
@@ -18,17 +22,13 @@ namespace DYP
         private float m_WaitTime = 0.5f;
         public float WaitTime { get { return m_WaitTime; } }
 
-        [SerializeField]
-        private float m_Speed = 2.0f;
-        public float Speed { get { return m_Speed; } }
+        public Action<int> OnReachPoint = delegate { };
 
         private int m_PrevPointIndex = 0;
         private int m_NextPointIndex = 1;
-        private float m_CurrPathLength;
         private Vector2 m_CurrDirection;
-        private float m_Progress = 0.0f;
 
-        private void Awake()
+        private void Reset()
         {
             m_Waypoints2D = GetComponent<Waypoints2D>();
         }
@@ -40,30 +40,15 @@ namespace DYP
 
         private void Update()
         {
-            UpdateInput(Time.deltaTime);
-        }
+            float timeStep = Time.deltaTime;
 
-        public void Init()
-        {
-            setPath(0, 1);
-        }
-
-        public override void UpdateInput(float timeStep)
-        {
-            m_Progress += timeStep * Speed / m_CurrPathLength;
-
-            m_Progress = Mathf.Clamp01(m_Progress);
-
-            var prev = getPoint(m_PrevPointIndex);
+            var curr = new Vector2() { x = transform.position.x, y = transform.position.y };
             var next = getPoint(m_NextPointIndex);
-
-            Vector2 newPos = Vector2.Lerp(prev, next, m_Progress);
+            var dir = next - curr;
 
             // reach new point
-            if (m_Progress >= 1.0f)
+            if (dir.sqrMagnitude < 0.05f * m_Controller.MovementSpeed)
             {
-                newPos = next;
-
                 int start = m_NextPointIndex;
                 int end = m_NextPointIndex + 1;
 
@@ -76,13 +61,32 @@ namespace DYP
                     end %= m_Waypoints2D.Count * 2 - 1;
                 }
 
+                OnReachPoint.Invoke(start);
+
                 setPath(start, end);
             }
 
-            Vector2 input = newPos - new Vector2(transform.position.x, transform.position.y);
+            float speedRatio = 1;
 
-            Vertical = input.y;
-            Horizontal = input.x;
+            if (dir.sqrMagnitude > Mathf.Pow(m_Controller.MovementSpeed * timeStep, 2))
+            {
+                speedRatio = Vector2.Distance(curr, next) / (m_Controller.MovementSpeed * timeStep);
+            }
+
+            m_CurrDirection = dir.normalized;
+            Vector2 input = m_CurrDirection * speedRatio;
+
+            if (input.sqrMagnitude > 1.0f)
+            {
+                input.Normalize();
+            }
+
+            m_Controller.InputMovement(new Vector2(input.x, input.y));
+        }
+
+        public void Init()
+        {
+            setPath(0, 1);
         }
 
         private void setPath(int start, int end)
@@ -93,10 +97,7 @@ namespace DYP
             var prevPoint = getPoint(m_PrevPointIndex);
             var nextPoint = getPoint(m_NextPointIndex);
 
-            m_CurrPathLength = Vector2.Distance(prevPoint, nextPoint);
             m_CurrDirection = (nextPoint - prevPoint).normalized;
-
-            m_Progress = 0.0f;
         }
 
         private Vector2 getPoint(int index)

@@ -42,8 +42,6 @@ namespace DYP
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
             if (ToggleButtonStyleNormal == null)
             {
                 ToggleButtonStyleNormal = "Button";
@@ -64,6 +62,33 @@ namespace DYP
                     Tools.current = m_LastTool;
                 }
             }
+
+            if (m_Target.Points.Count > 0)
+            {
+                if (GUILayout.Button("Align points to transform.position"))
+                {
+                    Undo.RecordObject(m_Target, "Align points to transform.position");
+                    var offset = new Vector2() { x = m_Target.transform.position.x, y = m_Target.transform.position.y } - m_Target.Points[0];
+
+                    for (int i = 0; i < m_Target.Points.Count; i++)
+                    {
+                        m_Target.Points[i] += offset;
+                    }
+
+                    m_NeedRepaint = true;
+                }
+
+                if (GUILayout.Button("Set transform.position to waypoint 0"))
+                {
+                    Undo.RecordObject(m_Target, "Set transform to waypoint 0");
+                    Vector3 firstPt = m_Target.At(0);
+                    firstPt.z = m_Target.transform.position.z;
+                    m_Target.transform.position = firstPt;
+
+                    m_NeedRepaint = true;
+                }
+            }
+            base.OnInspectorGUI();
         }
 
         private void OnSceneGUI()
