@@ -7,6 +7,6 @@ namespace DYP
     public interface IHasAction
     {
         // TODO: Add ExecuteAction(IActionInput)
-        void ExecuteAction();
+        public void ExecuteAction();
     }
 }

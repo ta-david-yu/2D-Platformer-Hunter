@@ -6,6 +6,7 @@ namespace DYP
 {
     public interface ICanDash
     {
-        void Dash(Vector2 direction);
+        public void PressDash(bool value);
+        public void HoldDash(bool value);
     }
 }

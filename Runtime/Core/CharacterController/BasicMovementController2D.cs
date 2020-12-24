@@ -12,8 +12,20 @@ using UnityEngine;
 namespace DYP
 {
     [RequireComponent(typeof(CharacterMotor2D))]
-    public class BasicMovementController2D : MonoBehaviour
+    public class BasicMovementController2D : MonoBehaviour, IHas2DAxisMovement, ICanJump, ICanDash, IHasAction
     {
+        [System.Serializable]
+        class InputBuffer
+        {
+            public Vector2 Input = Vector2.zero;
+
+            public bool IsJumpPressed = false;
+            public bool IsJumpHeld = false;
+            public bool IsJumpReleased = false;
+            public bool IsDashPressed = false;
+            public bool IsDashHeld = false;
+        }
+
         [System.Serializable]
         class MovementSettings
         {
@@ -71,21 +83,10 @@ namespace DYP
         }
 
         [System.Serializable]
-        class InputBuffer
-        {
-            public Vector2 Input = Vector2.zero;
-
-            public bool IsJumpPressed = false;
-            public bool IsJumpHeld = false;
-            public bool IsJumpReleased = false;
-            public bool IsDashPressed = false;
-            public bool IsDashHeld = false;
-        }
-
-        [System.Serializable]
         class Dash
         {
             public BaseDashModule Module;
+            public float WillDashPaddingTime = 0.15f;
 
             private int m_DashDir;
             public int DashDir { get { return m_DashDir; } }      // 1: right, -1: left
@@ -194,8 +195,6 @@ namespace DYP
         [SerializeField]
         private CharacterMotor2D m_Motor;
 
-        [SerializeField]
-        private BaseInputDriver m_InputDriver;
         private InputBuffer m_InputBuffer = new InputBuffer();
 
         [Header("Settings")]
@@ -222,6 +221,8 @@ namespace DYP
         private int m_AirJumpCounter = 0;
         private int m_WillJumpPaddingFrame = -1;
         private int m_FallingJumpPaddingFrame = -1;
+
+        private int m_WillDashPaddingFrame = -1;
 
         private float m_CurrentTimeStep = 0;
 
@@ -257,7 +258,7 @@ namespace DYP
         private Vector3 m_Velocity;
         public Vector3 InputVelocity { get { return m_Velocity; } }
 
-        public float MovementSpeed { get { return m_MovementSettings.Speed; } set { m_MovementSettings.Speed = value; } }
+        float IHas2DAxisMovement.MovementSpeed => throw new NotImplementedException();
 
         private float m_VelocityXSmoothing;
 
@@ -300,15 +301,6 @@ namespace DYP
         private void Reset()
         {
             m_Motor = GetComponent<CharacterMotor2D>();
-            m_InputDriver = GetComponent<BaseInputDriver>();
-        }
-
-        private void Awake()
-        {
-            if (m_InputDriver == null)
-            {
-                Debug.LogWarning("An InputDriver is needed for a BasicCharacterController2D");
-            }
         }
 
         private void Start()
@@ -319,11 +311,6 @@ namespace DYP
         private void FixedUpdate()
         {
             _Update(Time.fixedDeltaTime);
-        }
-
-        private void Update()
-        {
-            readInput(Time.deltaTime);
         }
 
         private void OnDrawGizmosSelected()
@@ -394,6 +381,55 @@ namespace DYP
             Gizmos.DrawWireSphere(GetComponent<Collider2D>().bounds.center, .5f);
         }
 
+        #endregion
+
+        #region Input Function
+        public void InputMovement(Vector2 axis)
+        {
+            // Update input buffer
+            m_InputBuffer.Input = new Vector2(axis.x, axis.y);
+        }
+
+        public void PressJump(bool value)
+        {
+            m_InputBuffer.IsJumpPressed = value;
+
+            // Do jump padding
+            if (m_InputBuffer.IsJumpPressed)
+            {
+                m_WillJumpPaddingFrame = calculateFramesFromTime(m_Jump.WillJumpPaddingTime, Time.fixedDeltaTime);
+            }
+        }
+
+        public void HoldJump(bool value)
+        {
+            m_InputBuffer.IsJumpHeld = value;
+        }
+
+        public void ReleaseJump(bool value)
+        {
+            m_InputBuffer.IsJumpReleased = value;
+        }
+
+        public void PressDash(bool value)
+        {
+            m_InputBuffer.IsDashPressed = value;
+
+            if (m_InputBuffer.IsDashPressed)
+            {
+                m_WillDashPaddingFrame = calculateFramesFromTime(m_Dash.WillDashPaddingTime, Time.fixedDeltaTime);
+            }
+        }
+
+        public void HoldDash(bool value)
+        {
+            m_InputBuffer.IsDashHeld = value;
+        }
+
+        public void ExecuteAction()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         public void SetFrozen(bool freeze)
@@ -629,25 +665,6 @@ namespace DYP
             m_Motor.OnMotorCollisionStay2D += onMotorCollisionStay2D;
         }
 
-        private void readInput(float timeStep)
-        {
-            // Update input buffer
-            m_InputBuffer.Input = new Vector2(m_InputDriver.Horizontal, m_InputDriver.Vertical);
-
-            m_InputBuffer.IsJumpPressed = m_InputDriver.Jump;
-
-            if (m_InputBuffer.IsJumpPressed)
-            {
-                m_WillJumpPaddingFrame = calculateFramesFromTime(m_Jump.WillJumpPaddingTime, timeStep);
-            }
-
-            m_InputBuffer.IsJumpHeld = m_InputDriver.HoldingJump;
-            m_InputBuffer.IsJumpReleased = m_InputDriver.ReleaseJump;
-
-            m_InputBuffer.IsDashPressed = m_InputDriver.Dash;
-            m_InputBuffer.IsDashHeld = m_InputDriver.HoldingDash;
-        }
-
         public void _Update(float timeStep)
         {
             m_CurrentTimeStep = timeStep;
@@ -660,6 +677,11 @@ namespace DYP
             if (m_WillJumpPaddingFrame >= 0)
             {
                 m_InputBuffer.IsJumpPressed = true;
+            }
+
+            if (m_WillDashPaddingFrame >= 0)
+            {
+                m_InputBuffer.IsDashPressed = true;
             }
 
             // read input from input driver
@@ -695,6 +717,7 @@ namespace DYP
             if (m_InputBuffer.IsDashPressed)
             {
                 startDash(rawInput.x, timeStep);
+                m_InputBuffer.IsDashPressed = false;
             }
 
             // check if want climbing ladder
@@ -1160,6 +1183,7 @@ namespace DYP
 
             if (m_FallingJumpPaddingFrame >= 0) m_FallingJumpPaddingFrame--;
             if (m_WillJumpPaddingFrame >= 0) m_WillJumpPaddingFrame--;
+            if (m_WillDashPaddingFrame >= 0) m_WillDashPaddingFrame--;
         }
 
         private void updateState(float timeStep)
@@ -1352,6 +1376,9 @@ namespace DYP
             m_Velocity = jumpVec;
         }
 
+        /// <summary>
+        /// Called if jump pressed input is successfully executed
+        /// </summary>
         private void consumeJumpPressed()
         {
             m_InputBuffer.IsJumpPressed = false;
@@ -1391,16 +1418,18 @@ namespace DYP
             int dashDir = (rawInputX != 0) ? rawInputX : FacingDirection;
             if (!DashModule.CanDashToSlidingWall)
             {
+                // Skip the dash if cannot dash towards the current sliding wall
                 if (IsState(MotorState.WallSliding))
                 {
                     int wallDir = (m_Motor.Collisions.Right) ? 1 : -1;
                     if (dashDir == wallDir)
                     {
-                        //Debug.Log("Dash Disallowed");
                         return;
                     }
                 }
             }
+
+            consumeDashPressed();
 
             if (DashModule.ChangeFacing)
             {
@@ -1427,6 +1456,15 @@ namespace DYP
                 m_Velocity.x = vecX;
                 changeState(IsOnGround() ? MotorState.OnGround : MotorState.Falling);
             }
+        }
+
+        /// <summary>
+        /// Called if dash pressed input is successfully executed
+        /// </summary>
+        private void consumeDashPressed()
+        {
+            m_InputBuffer.IsDashPressed = false;
+            m_WillDashPaddingFrame = -1;
         }
 
         private void startAction(int rawInputX)
@@ -1649,5 +1687,6 @@ namespace DYP
             //    m_AirJumpCounter = 0;
             //}
         }
+
     }
 }

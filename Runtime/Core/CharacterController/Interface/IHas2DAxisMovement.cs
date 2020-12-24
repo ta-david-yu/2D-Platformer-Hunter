@@ -6,7 +6,7 @@ namespace DYP
 {
     public interface IHas2DAxisMovement
     {
-        void InputMovement(Vector2 axis);
-        float MovementSpeed { get; }
+        public void InputMovement(Vector2 axis);
+        public float MovementSpeed { get; }
     }
 }

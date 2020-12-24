@@ -97,8 +97,8 @@ GameObject:
   - component: {fileID: 114797820185099922}
   - component: {fileID: 114486199799211510}
   - component: {fileID: 114368022569154642}
-  - component: {fileID: 114043337497974322}
   - component: {fileID: 95095399055848442}
+  - component: {fileID: 5699630606393460343}
   m_Layer: 8
   m_Name: Adventurer
   m_TagString: Player
@@ -214,7 +214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Motor: {fileID: 114797820185099922}
-  m_InputDriver: {fileID: 114043337497974322}
+  m_InputDriver: {fileID: 0}
   m_MovementSettings:
     Speed: 8
     AccelerationTimeAirborne: 0.1
@@ -266,18 +266,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Appearance: {fileID: 4204557321351522}
   m_Animtor: {fileID: 95095399055848442}
---- !u!114 &114043337497974322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561394120766814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f810d1adc587e71499145a8a8c6bebe9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &95095399055848442
 Animator:
   serializedVersion: 3
@@ -297,6 +285,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5699630606393460343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561394120766814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e61e52eb8d749554ab00a7d6118cf20c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Controller: {fileID: 114486199799211510}
 --- !u!1 &1859438805056196
 GameObject:
   m_ObjectHideFlags: 0
