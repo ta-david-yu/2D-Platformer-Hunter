@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DYP;
+using DYP.Util;
 
 public class AdventurerAnimationController : MonoBehaviour
 {
