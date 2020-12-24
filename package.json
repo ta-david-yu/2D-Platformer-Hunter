@@ -12,5 +12,12 @@
       "name": "Ta David Yu",
       "email": "d366095@gmail.com",
       "url": "https://github.com/ta-david-yu"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Playground Samples",
+      "description": "",
+      "path": "Samples~/PlaygroundSamples"
+    }
+  ]
 }
