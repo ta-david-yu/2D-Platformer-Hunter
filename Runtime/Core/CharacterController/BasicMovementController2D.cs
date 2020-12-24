@@ -191,15 +191,10 @@ namespace DYP
             public Vector2 RestrictedAreaBottomLeft = new Vector2(-Mathf.Infinity, -Mathf.Infinity);
         }
 
+        [SerializeField]
         private CharacterMotor2D m_Motor;
-        public Collider2D MotorCollider
-        {
-            get
-            {
-                return m_Motor.Collider2D;
-            }
-        }
 
+        [SerializeField]
         private BaseInputDriver m_InputDriver;
         private InputBuffer m_InputBuffer = new InputBuffer();
 
@@ -305,13 +300,11 @@ namespace DYP
         private void Reset()
         {
             m_Motor = GetComponent<CharacterMotor2D>();
+            m_InputDriver = GetComponent<BaseInputDriver>();
         }
 
         private void Awake()
         {
-            m_Motor = GetComponent<CharacterMotor2D>();
-            m_InputDriver = GetComponent<BaseInputDriver>();
-
             if (m_InputDriver == null)
             {
                 Debug.LogWarning("An InputDriver is needed for a BasicCharacterController2D");
@@ -357,7 +350,7 @@ namespace DYP
             // draw ledge grabbing gizmos
             if (m_Motor != null)
             {
-                var boundingBox = MotorCollider.bounds;
+                var boundingBox = m_Motor.Collider2D.bounds;
 
                 Vector2 origin = Vector2.zero;
                 origin.y = boundingBox.max.y + m_WallInteraction.LedgeDetectionOffset;
@@ -474,7 +467,7 @@ namespace DYP
         public bool CheckIfAtLedge(int wallDirX, ref Vector2 ledgePoint)
         {
             // first raycast down, then check overlap
-            var boundingBox = MotorCollider.bounds;
+            var boundingBox = m_Motor.Collider2D.bounds;
 
             Vector2 origin = Vector2.zero;
             origin.y = boundingBox.max.y + m_WallInteraction.LedgeDetectionOffset;
@@ -940,7 +933,7 @@ namespace DYP
                                     isGrabbingLedge = true;
                                     m_Velocity.y = 0;
 
-                                    float adjustY = ledgePos.y - MotorCollider.bounds.max.y;
+                                    float adjustY = ledgePos.y - m_Motor.Collider2D.bounds.max.y;
 
                                     m_Motor.transform.position += Vector3.up * adjustY;
                                 }

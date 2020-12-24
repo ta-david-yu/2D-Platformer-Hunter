@@ -73,6 +73,8 @@ namespace DYP
 
         // Reference
         [Header("Reference")]
+
+        [SerializeField]
         private Raycaster m_Raycaster;
         public Raycaster Raycaster { get { return m_Raycaster; } }
 
@@ -100,7 +102,7 @@ namespace DYP
 
         #region Monobehaviour
 
-        private void Awake()
+        private void Reset()
         {
             m_Raycaster = GetComponent<Raycaster>();
         }

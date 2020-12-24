@@ -19,6 +19,7 @@ namespace DYP
         public const float c_SkinWidth = .015f;
 
         // Reference
+        [field: SerializeField]
         public Collider2D Collider { get; protected set; }
         private RaycastOrigins m_Origins;
         public RaycastOrigins Origins { get { return m_Origins; } }
@@ -39,7 +40,7 @@ namespace DYP
         private float m_VerticalRaySpacing;
         public float VerticalRaySpacing { get { return m_VerticalRaySpacing; } }
 
-        private void Awake()
+        private void Reset()
         {
             Collider = GetComponent<Collider2D>();
         }

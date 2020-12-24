@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34b7ad44935d3e149bca64146755d760, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Collider>k__BackingField: {fileID: 7893817364973429510}
   m_CollisionLayer:
     serializedVersion: 2
     m_Bits: 512
@@ -114,6 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bdc00dfb9df34d498f7bb97f7031157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Raycaster: {fileID: 1080167269}
   m_MaxClimbAngle: 80
   m_MaxDescendAngle: 80
 --- !u!114 &7637016947468089689
@@ -128,6 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 775c6bf027a9b5741ae4f582b2393649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Motor: {fileID: 697335435985591157}
+  m_InputDriver: {fileID: 2000041246621388756}
   m_MovementSettings:
     Speed: 8
     AccelerationTimeAirborne: 0.1
@@ -235,6 +239,8 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -246,6 +252,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -314,6 +321,8 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -325,6 +334,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

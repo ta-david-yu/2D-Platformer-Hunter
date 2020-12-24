@@ -19,7 +19,9 @@ namespace DYP
         }
 
         [Header("Reference")]
+        [SerializeField]
         private PlatformMotor2D m_Motor;
+        [SerializeField]
         private BaseInputDriver m_InputDriver;
 
         [Header("Settings")]
@@ -29,11 +31,14 @@ namespace DYP
 
         #region Monobehaviour
 
-        private void Awake()
+        private void Reset()
         {
             m_Motor = GetComponent<PlatformMotor2D>();
             m_InputDriver = GetComponent<BaseInputDriver>();
+        }
 
+        private void Awake()
+        {
             if (m_InputDriver == null)
             {
                 Debug.LogWarning("An InputDriver is needed for a PlatformController2D");
