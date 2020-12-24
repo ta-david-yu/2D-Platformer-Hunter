@@ -1,0 +1,17 @@
+{
+    "name": "com.ta-david-yu.2d-platformer-hunter.Editor",
+    "references": [
+        "GUID:ee1a2a6f2c907ca4b9ffc9c16b28cb8c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

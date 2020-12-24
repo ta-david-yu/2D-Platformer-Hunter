@@ -1,0 +1,16 @@
+{
+  "name": "com.ta-david-yu.2d-platformer-hunter",
+  "version": "0.2.2-preview.1",
+  "displayName": "DY.2D Platformer Hunter",
+  "description": "A 2D Platformer Character Controller",
+  "unity": "2019.4",
+  "keywords": [
+    "platformer",
+	"controller"
+  ],
+  "author": {
+      "name": "Ta David Yu",
+      "email": "d366095@gmail.com",
+      "url": "https://github.com/ta-david-yu"
+  }
+}
