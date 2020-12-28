@@ -82,6 +82,10 @@ namespace DYP
 
         [Header("Settings")]
         [SerializeField]
+        [Tooltip("Use FixedUpdate instead of LateUpdate")]
+        private bool m_LerpInFixedUpdate = true;
+
+        [SerializeField]
         private Vector2 m_FocusAreaSize = new Vector2(3, 1);
 
         [SerializeField]
@@ -109,7 +113,27 @@ namespace DYP
             m_TargetPositionX = MainTarget.transform.position.x;
         }
 
+        private void FixedUpdate()
+        {
+            if (!m_LerpInFixedUpdate)
+            {
+                return;
+            }
+
+            _UpdateCamera(Time.fixedDeltaTime);
+        }
+
         private void LateUpdate()
+        {
+            if (m_LerpInFixedUpdate)
+            {
+                return;
+            }
+
+            _UpdateCamera(Time.deltaTime);
+        }
+
+        public void _UpdateCamera(float timeStep)
         {
             m_FocusArea.Update(MainTarget.Collider.bounds);
 
