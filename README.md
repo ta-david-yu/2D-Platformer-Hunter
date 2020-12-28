@@ -25,9 +25,9 @@ For instance, a sprite animation controller that changes sprite when a character
 * On-Slope Movement
 * Air Jump
 * Wall Jump
-* Climbing Area - ladder/rope climbing behaviour
+* Climbing Area - Ladder/rope climbing behaviour
 * Restricted Climbing Area - Users can separate the actual movable area in climbing state with the trigger area. Controller will be smoothly interpolated from triggered position to restricted area when entering climbing state.
-* One-Way Platform
+* One-Way Platform - Add the OneWayPlatform component to the platform which you want it to be One-Way Platform
 * Moving Platform - Including a node editor for editing waypoints.
 * Dash - User is able to customize dash modules that can be applied to a controller.
 * Jump Input Buffering - The jump input will be buffered for a period of time when the character controller is still in the air.
@@ -36,7 +36,7 @@ For instance, a sprite animation controller that changes sprite when a character
 * Wall Climbing - You can configure whether your controller slides on wall or climbs on walls (just like how [Knuckles](https://youtu.be/-qOVqxn-JVA) does)  
 
 # Documentation
-* Remember to add a tag named "OneWayPlatform"
+* The collision layer of the raycaster on a controller should be different from the layer of the gameobject itself, otherwise you fly :D
 * More to be added :D
 
 # Maybe, probably, will be, future to-do list:
