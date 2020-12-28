@@ -256,7 +256,8 @@ namespace DYP
                     // only check other raycasts if not climbing
                     if (!m_CollisionInfo.ClimbingSlope || slopeAngle > m_MaxClimbAngle)
                     {
-                        if (hit.collider.CompareTag("OneWayPlatform"))
+                        OneWayPlatform oneWayPlatform = null;
+                        if (hit.collider.TryGetComponent(out oneWayPlatform))
                         {
                             continue;
                         }
@@ -296,7 +297,8 @@ namespace DYP
 
                 if (hit)
                 {
-                    if (hit.collider.CompareTag("OneWayPlatform"))
+                    OneWayPlatform oneWayPlatform = null;
+                    if (hit.collider.TryGetComponent(out oneWayPlatform))
                     {
                         if (directionY == 1 || hit.distance == 0)
                         {
