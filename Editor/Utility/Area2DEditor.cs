@@ -41,6 +41,7 @@ namespace DYP
 
         private Area2D m_Target;
         private bool m_IsInEditMode = false;
+        private int m_CurrEditModeUndoGroupId = -1;
         SelectionInfo m_SelectionInfo;
         Tool m_LastTool = Tool.None;
         bool m_NeedRepaint;
@@ -172,11 +173,21 @@ namespace DYP
                 m_IsInEditMode = !m_IsInEditMode;
                 if (m_IsInEditMode)
                 {
+                    Undo.SetCurrentGroupName("Edit Area2D");
+                    m_CurrEditModeUndoGroupId = Undo.GetCurrentGroup();
+                    Undo.RecordObject(target, "Edit Area2D");
+
                     m_LastTool = Tools.current;
                     Tools.current = Tool.None;
                 }
                 else
                 {
+                    if (m_CurrEditModeUndoGroupId != -1)
+                    {
+                        Undo.CollapseUndoOperations(m_CurrEditModeUndoGroupId);
+                        m_CurrEditModeUndoGroupId = -1;
+                    }
+
                     Tools.current = m_LastTool;
                 }
             }
