@@ -113,12 +113,6 @@ namespace DYP
             Init();
         }
 
-        // Temporary Update
-        private void Update()
-        {
-            _Update(Time.deltaTime);
-        }
-
         #endregion
 
         #region MainFunction
@@ -130,11 +124,6 @@ namespace DYP
             Velocity = Vector3.zero;
             Raw_Velocity = Vector3.zero;
             m_MovingDirection = 1;
-        }
-
-        public void _Update(float timeStep)
-        {
-
         }
 
         public override void Move(Vector3 velocity, bool isOnMovingMotor = false)
