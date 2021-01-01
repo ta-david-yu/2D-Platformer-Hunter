@@ -8,6 +8,9 @@ Extended from [Sebastian Lague's Creating a 2D Platformer series](https://youtu.
 # Requirement
 Unity 2018.3.8f1 or later
 
+# How to install
+* Add this package through Unity Package Manager with this link: https://github.com/ta-david-yu/2D-Platformer-Hunter.git
+
 # Design
 
 The code structure is based on a model that I call Input-Controller-Motor model. Each controller consists of three modules: Input, Controller and Motor.
@@ -38,17 +41,6 @@ For instance, a sprite animation controller that changes sprite when a character
 # Documentation
 * The collision layer of the raycaster on a controller should be different from the layer of the gameobject itself, otherwise you fly :D
 * More to be added :D
-
-# Maybe, probably, will be, future to-do list:
-
-* Custom Action Module - A new "Action" state in character controller. It will be more flexible than Dash Module. Probably with an action editor that can edit frame events / curve, and maybe a hitbox editor.
-* Ability System - A RPG ability system.
-
-Features not related to platformer but important
-
-* Using UPM - Pack this project into Unity Package managed by new Unity Package Manager. [note](https://gist.github.com/LotteMakesStuff/6e02e0ea303030517a071a1c81eb016e)
-
-*[UPM]: Unity Package Manager
 
 # Materials
 rvros - Animated Pixel Adventurer
