@@ -40,6 +40,15 @@ namespace DYP
             m_SelectionInfo = new SelectionInfo();
         }
 
+        private void OnDisable()
+        {
+            if (m_IsInEditMode)
+            {
+                m_IsInEditMode = false;
+                Tools.current = m_LastTool;
+            }
+        }
+
         public override void OnInspectorGUI()
         {
             if (ToggleButtonStyleNormal == null)
@@ -47,6 +56,14 @@ namespace DYP
                 ToggleButtonStyleNormal = "Button";
                 ToggleButtonStyleToggled = new GUIStyle(ToggleButtonStyleNormal);
                 ToggleButtonStyleToggled.normal.background = ToggleButtonStyleToggled.active.background;
+            }
+
+            ///
+            var guiCol = GUI.color;
+
+            if (m_IsInEditMode)
+            {
+                GUI.color = Color.yellow;
             }
 
             if (GUILayout.Button("Edit Waypoints", (m_IsInEditMode) ? ToggleButtonStyleToggled : ToggleButtonStyleNormal))
@@ -62,6 +79,12 @@ namespace DYP
                     Tools.current = m_LastTool;
                 }
             }
+
+            if (m_IsInEditMode)
+            {
+                GUI.color = guiCol;
+            }
+            ///
 
             if (m_Target.Points.Count > 0)
             {
@@ -80,7 +103,7 @@ namespace DYP
 
                 if (GUILayout.Button("Set transform.position to waypoint 0"))
                 {
-                    Undo.RecordObject(m_Target, "Set transform to waypoint 0");
+                    Undo.RecordObject(m_Target.transform, "Set transform to waypoint 0");
                     Vector3 firstPt = m_Target.At(0);
                     firstPt.z = m_Target.transform.position.z;
                     m_Target.transform.position = firstPt;
@@ -101,7 +124,8 @@ namespace DYP
             }
             else if (evt.type == EventType.Layout)
             {
-                HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+                if (m_IsInEditMode)
+                    HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
             }
             else
             {
@@ -203,7 +227,9 @@ namespace DYP
                 var targetPosition = mousePosition;
                 if (snap)
                 {
-                    int prevIndex = (m_SelectionInfo.PointIndex - 1) % m_Target.Count;
+                    int prevIndex = (m_SelectionInfo.PointIndex - 1);
+                    if (prevIndex < 0)
+                        prevIndex = m_Target.Count - 1;
                     int nextIndex = (m_SelectionInfo.PointIndex + 1) % m_Target.Count;
                     targetPosition = snapPosition(m_Target.At(prevIndex), m_Target.At(nextIndex), mousePosition);
                 }
@@ -227,7 +253,9 @@ namespace DYP
                 var targetPosition = mousePosition;
                 if (snap)
                 {
-                    int prevIndex = (m_SelectionInfo.PointIndex - 1) % m_Target.Count;
+                    int prevIndex = (m_SelectionInfo.PointIndex - 1);
+                    if (prevIndex < 0)
+                        prevIndex = m_Target.Count - 1;
                     int nextIndex = (m_SelectionInfo.PointIndex + 1) % m_Target.Count;
                     targetPosition = snapPosition(m_Target.At(prevIndex), m_Target.At(nextIndex), mousePosition);
                 }
