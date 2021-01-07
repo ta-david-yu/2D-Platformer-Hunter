@@ -77,8 +77,8 @@ namespace DYP
         [Header("Reference")]
 
         [SerializeField]
-        private Raycaster m_MainTarget;
-        public Raycaster MainTarget { get { return m_MainTarget; } private set { m_MainTarget = value; } }
+        private Collider2D m_MainTarget;
+        public Collider2D MainTarget { get { return m_MainTarget; } private set { m_MainTarget = value; } }
 
         [Header("Settings")]
         [SerializeField]
@@ -109,7 +109,7 @@ namespace DYP
 
         private void Start()
         {
-            m_FocusArea = new FocusArea(MainTarget.Collider.bounds, m_FocusAreaSize);
+            m_FocusArea = new FocusArea(MainTarget.bounds, m_FocusAreaSize);
             m_TargetPositionX = MainTarget.transform.position.x;
         }
 
@@ -135,7 +135,7 @@ namespace DYP
 
         public void _UpdateCamera(float timeStep)
         {
-            m_FocusArea.Update(MainTarget.Collider.bounds);
+            m_FocusArea.Update(MainTarget.bounds);
 
             m_TargetVelocityX = MainTarget.transform.position.x - m_TargetPositionX;
 
@@ -157,7 +157,7 @@ namespace DYP
             m_TargetPositionX = MainTarget.transform.position.x;
         }
 
-        public void SetMainTarget(Raycaster _target)
+        public void SetMainTarget(Collider2D _target)
         {
             MainTarget = _target;
         }
