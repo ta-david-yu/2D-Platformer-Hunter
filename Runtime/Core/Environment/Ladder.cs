@@ -38,11 +38,11 @@ namespace DYP
 
         [SerializeField]
         private float m_TopAreaHeight = 1;
-        public float TopAreaHeight { get { return m_TopAreaHeight; } }
+        public float TopAreaHeight { get { return m_TopAreaHeight; } set { m_TopAreaHeight = value; } }
 
         [SerializeField]
         private float m_BottomAreaHeight = 1;
-        public float BottomAreaHeight { get { return m_BottomAreaHeight; } }
+        public float BottomAreaHeight { get { return m_BottomAreaHeight; } set { m_BottomAreaHeight = value; } }
 
         public void OnTriggerEnter2D(Collider2D col)
         {
