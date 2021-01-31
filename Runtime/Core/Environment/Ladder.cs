@@ -28,9 +28,9 @@ namespace DYP
 
 
         [SerializeField]
-        private Area2D m_RestrictedArea;
-        public Area2D RestrictedArea { get { return m_RestrictedArea; } }
-        public Bounds RestrictedAreaBounds { get { return RestrictedArea.Bounds; } }
+        private BoxCollider2D m_RestrictedArea;
+        public BoxCollider2D RestrictedArea { get { return m_RestrictedArea; } }
+        public Bounds RestrictedAreaBounds { get { return RestrictedArea.bounds; } }
 
         [SerializeField]
         private bool m_IsRestrictedAreaTopIgnored = true;

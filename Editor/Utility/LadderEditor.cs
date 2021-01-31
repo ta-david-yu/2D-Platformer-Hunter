@@ -45,21 +45,17 @@ namespace DYP
                 ToggleButtonStyleToggled.active.background = ToggleButtonStyleToggled.active.background;
             }
 
-            EditorGUILayout.Space();
-
             /* top and bottom area settings */
-            var bakcgroundStyle = EditorStyles.textArea;
-            EditorGUILayout.BeginVertical(bakcgroundStyle);
+            var backgroundStyle = new GUIStyle(EditorStyles.helpBox);
+            EditorGUILayout.BeginVertical(backgroundStyle);
             {
                 drawTopBottomAreaInspector();
             }
             EditorGUILayout.EndVertical();
             /* */
 
-            EditorGUILayout.Space();
-
             /* restricted area settings */
-            EditorGUILayout.BeginVertical(bakcgroundStyle);
+            EditorGUILayout.BeginVertical(backgroundStyle);
             {
                 drawRestrictedAreaInspector();
             }
@@ -75,8 +71,8 @@ namespace DYP
             style.alignment = TextAnchor.MiddleCenter;
             EditorGUILayout.LabelField("Top & Bottom Area Settings", style);
 
-            m_TopAreaHeight.floatValue = EditorGUILayout.FloatField("TopArea Height", m_TopAreaHeight.floatValue);
-            m_BottomAreaHeight.floatValue = EditorGUILayout.FloatField("BottomArea Height", m_BottomAreaHeight.floatValue);
+            EditorGUILayout.PropertyField(m_TopAreaHeight);
+            EditorGUILayout.PropertyField(m_BottomAreaHeight);
 
             EditorGUILayout.BeginHorizontal();
             {
@@ -99,34 +95,21 @@ namespace DYP
             style.alignment = TextAnchor.MiddleCenter;
             EditorGUILayout.LabelField("Restricted Area Settings", style);
 
-            bool newHasRestrictedArea =
-                EditorGUILayout.Toggle(new GUIContent("Use Restricted Area"), m_HasRestrictedArea.boolValue);
+            EditorGUILayout.PropertyField(m_HasRestrictedArea);
 
-            if (!newHasRestrictedArea) EditorGUI.BeginDisabledGroup(true);
+            using (new EditorGUI.DisabledGroupScope(!m_HasRestrictedArea.boolValue))
             {
-                if (newHasRestrictedArea)
-                {
-                    if (m_RestrictedArea.objectReferenceValue == null)
-                    {
-                        addRestrictedArea();
-                    }
-
-                    if (!m_HasRestrictedArea.boolValue)
-                    {
-                        m_HasRestrictedArea.boolValue = newHasRestrictedArea;
-                    }
-                }
-
-                m_RestrictedArea.objectReferenceValue =
-                    EditorGUILayout.ObjectField("Restricted Area", m_Target.RestrictedArea, typeof(Area2D), true);
+                EditorGUILayout.PropertyField(m_RestrictedArea);
+                EditorGUILayout.PropertyField(m_IsRestrictedAreaTopIgnored);
             }
 
-            m_IsRestrictedAreaTopIgnored.boolValue =
-                EditorGUILayout.Toggle(new GUIContent("Ignore Restricted Area Top"), m_IsRestrictedAreaTopIgnored.boolValue);
-
-            if (!newHasRestrictedArea) EditorGUI.EndDisabledGroup();
-
-            m_HasRestrictedArea.boolValue = newHasRestrictedArea;
+            // Create a new restricted area if there is no one
+            if (m_HasRestrictedArea.boolValue &&
+                m_RestrictedArea.objectReferenceValue == null)
+            {
+                if (GUILayout.Button("Create a new restricted area"))
+                addRestrictedArea();
+            }
         }
 
         private void OnSceneGUI()
@@ -176,8 +159,8 @@ namespace DYP
             // draw restricted area if had one
             if (m_Target.HasRestrictedArea && m_Target.RestrictedArea != null)
             {
-                drawArea(m_Target.RestrictedArea.Bounds, m_Target.RestrictedArea._debugColor);
-                Handles.Label(m_Target.RestrictedArea.Center, "Restricted", txtStyle);
+                drawArea(m_Target.RestrictedArea.bounds, Color.red);
+                Handles.Label(m_Target.RestrictedArea.bounds.center, "Restricted", txtStyle);
             }
 
             Handles.color = oriColor;
@@ -189,15 +172,16 @@ namespace DYP
         }
 
         private void addRestrictedArea()
-        {
+        { 
             GameObject areaObj = new GameObject("_restrictedArea");
             areaObj.transform.SetParent(m_Target.transform);
             areaObj.transform.localPosition = Vector3.zero;
             areaObj.transform.localRotation = Quaternion.identity;
             areaObj.transform.localScale = Vector3.one;
 
-            m_RestrictedArea.objectReferenceValue = areaObj.AddComponent<Area2D>();
-            (m_RestrictedArea.objectReferenceValue as Area2D)._debugColor = Color.red;
+            m_RestrictedArea.objectReferenceValue = areaObj.AddComponent<BoxCollider2D>();
+
+            Undo.RegisterCreatedObjectUndo(areaObj, "New RestrictedArea Obj");
 
             serializedObject.ApplyModifiedProperties();
         }
