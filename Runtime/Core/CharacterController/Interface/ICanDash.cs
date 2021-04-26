@@ -6,7 +6,7 @@ namespace DYP
 {
     public interface ICanDash
     {
-        public void PressDash(bool value);
-        public void HoldDash(bool value);
+        void PressDash(bool value);
+        void HoldDash(bool value);
     }
 }

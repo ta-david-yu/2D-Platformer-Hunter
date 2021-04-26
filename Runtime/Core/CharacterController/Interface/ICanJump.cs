@@ -6,8 +6,8 @@ namespace DYP
 {
     public interface ICanJump
     {
-        public void PressJump(bool value);
-        public void HoldJump(bool value);
-        public void ReleaseJump(bool value);
+        void PressJump(bool value);
+        void HoldJump(bool value);
+        void ReleaseJump(bool value);
     }
 }
