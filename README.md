@@ -1,47 +1,84 @@
-# 2D Platformer Hunter 
 ![image](https://github.com/ta-david-yu/2D-Platformer-Hunter/blob/master/platformer-preview.gif)  
-[Features video links here](https://youtu.be/wnalr3_RULU)  
-[I've also made a short level with it](https://youtu.be/Sj-WD9qeFmc)  
+# 2D Platformer Hunter 
 Implementation of a raycast-based 2D platformer controller in Unity.  
 Extended from [Sebastian Lague's Creating a 2D Platformer series](https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.) with more customizable options and better modularization.
 
-# Requirement
-Unity 2018.3.8f1 or later
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+        <a href="#description">Description</a>
+    </li>
+    <li>
+		<a href="#installation">Installation</a>
+    </li>
+    <li>
+        <a href="#design">Design</a>
+    </li>
+    <li>
+        <a href="#features">Features</a>
+    </li>
+      <li>
+        <a href="#misc-notes">Misc Notes</a>
+    </li>
+    <li>
+        <a href="#credits">Credits</a>
+    </li>
+    <li>
+        <a href="#license">License</a>
+    </li>
+  </ol>
+</details>
 
-# How to install
-* Add this package through Unity Package Manager with this link: https://github.com/ta-david-yu/2D-Platformer-Hunter.git
+## Description
+- 2D Platformer Hunter is a 2D platforming controller that uses raycast-based collision, extended from [Sebastian Lague's "Creating a 2D Platformer" series](https://youtu.be/MbWK8bCAU2w?list=PLFt_AvWsXl0f0hqURlhyIoAabKPgRsqjz.) featuring more customization and modularity.
+- [Demo Video](https://youtu.be/wnalr3_RULU)
+- [Example Tutorial Level](https://youtu.be/Sj-WD9qeFmc)
 
-# Design
+## Installation
+- Ensure you have the latest version of the [Unity Real-Time Development Platform](https://unity.com/download).
+- Navigate to Unity's top menu tab, select Window > Package Manager, and install this package through the following link: https://github.com/ta-david-yu/2D-Platformer-Hunter.git
 
-The code structure is based on a model that I call Input-Controller-Motor model. Each controller consists of three modules: Input, Controller and Motor.
+## Design
+
+The code structure is based on a Input-Controller-Motor model. Each controller consists of three individual components: Input, Controller and Motor.
+
 Each module can be replaced with user-customized module to achieve various gameplay mechanics.
-* **Input** represents the brain of a controller. The brain can be player's input or an AI. Waypoint navigation for moving platform is also a type of Input module.
-* **Controller** represents the body of a controller. The body decides what a character can do, such as, double jumpping, dasing.
-* **Motor** represents the physics law of a controller. For example, a character motor collides with obstacles; a platform motor can carry other motors or transforms.
+* The **Input** serves as the brain of the controller. The brain can be a preprogrammed AI system or be player-controlled. Input modules also support waypoint navigation for moving platforms.
+* The **Controller** represents the body of the controller. The body represents the actions a given character can perform. This includes regular movement, jumping, double-jumping, and dashing.
+* The **Motor** controls the physics acting on the controller. For example, a motor for a given character can collide with obstacles in a level. A motor for a platform or other level object can carry other motors and transforms.
 
-Any other behaviours that do not belong to these three modules should instead be implemented in a different components and listen to events sent by three main modules.
-For instance, a sprite animation controller that changes sprite when a character jumps should subscribe to OnJump event of the CharacterController.
+Other behaviours that do not belong to these three modules should instead be implemented in a different external components and set to listen to events sent out by one of these three main modules.
 
-# Features
+For instance, a sprite animation controller that swaps sprites when a character performs a jump should be set to listen to the OnJump event of the CharacterController object.
 
-* Variable Jump Height
-* On-Slope Movement
-* Air Jump
-* Wall Jump
-* Climbing Area - Ladder/rope climbing behaviour
-* Restricted Climbing Area - Users can separate the actual movable area in climbing state with the trigger area. Controller will be smoothly interpolated from triggered position to restricted area when entering climbing state.
-* One-Way Platform - Add the OneWayPlatform component to the platform which you want it to be One-Way Platform
-* Moving Platform - Including a node editor for editing waypoints.
-* Dash - User is able to customize dash modules that can be applied to a controller.
-* Jump Input Buffering - The jump input will be buffered for a period of time when the character controller is still in the air.
-* Coyote Time - Also known as grace period jumping. It allows players to register jump input in a small period of time even after moving off ledges.
-* Ledge Grabbing
-* Wall Climbing - You can configure whether your controller slides on wall or climbs on walls (just like how [Knuckles](https://youtu.be/-qOVqxn-JVA) does)  
+## Features
 
-# Documentation
-* The collision layer of the raycaster on a controller should be different from the layer of the gameobject itself, otherwise you fly :D
-* More to be added :D
+### Jumping
+  - Jump Input Buffering
+    - An inputted jump will be held and buffered for a period of time until the character has an actionable jump again, to improve responsivenes.
+  - Coyote Time
+    - Also known colloquially as "Grace Period Jumping". If a jump input is registered very shortly after a player character moves off a jumpable surface, the jump still occurs despite technically being mid-air.
+  - Variable Jump Height depending on held button.
+  - Wall Jump
+  - Air Jump
+### Climbing
+  - Editable climbing area
+    - Supports climbing on designated areas such as ladders and ropes. Climbing and non-climbing areas are distinguished by an area trigger. The controller will smoothly interpolate its position from the area trigger onto  the climbable area.
+  - Ledge Grabbing
+  - Wall Climbing
+    - Configurable behavior depending on whether you prefer your controller to slide down walls or climb up them.
+### Other
+  - Dash modules that can be applied to controllers to alter dashing behavior.
+  - Smooth movement on slopes
+  - One-Way Platform component that horizontally translates a platform in one direction.
+  - Moving Platform component that includes a node editor for waypoint editing.    
 
-# Materials
-rvros - Animated Pixel Adventurer
-https://rvros.itch.io/animated-pixel-hero
+## Misc Notes
+- The raycaster collision layer must be on different layer than the GameObject, to ensure gravity scaling and prevent unintended behavior.
+
+## Credits
+- [Character Sprites](https://rvros.itch.io/animated-pixel-hero)
+
+## License
+- Licensed under the [MIT License](LICENSE), meaning it is freely editable as long as the original copyright notice and disclaimers are included.
